@@ -5,9 +5,9 @@
   "scripts": {
     "test": "jest",
     "build": "tsc && webpack --config src/server/webpack.config.ts",
+    "dev": "concurrently \"npm run watch\" \"nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server/index.ts\"",
     "watch": "webpack --watch --config src/server/webpack.config.ts",
     "start": "node dist/server/index.js",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server/index.ts",
     "docker:dev": "docker-compose -f docker-compose.yml up --build",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs"
@@ -27,6 +27,7 @@
     "@types/node": "^22.13.10",
     "@types/webpack": "^5.28.5",
     "@types/webpack-dev-server": "^4.7.1",
+    "concurrently": "^9.1.2",
     "css-loader": "^7.1.2",
     "html-webpack-plugin": "^5.6.3",
     "jest": "^29.7.0",
