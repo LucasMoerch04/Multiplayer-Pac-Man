@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount the project folder into the container for live updates
+      - .:/app
+      # Prevent overwriting the container's node_modules with the host's (which might be empty)
+      - /app/node_modules
