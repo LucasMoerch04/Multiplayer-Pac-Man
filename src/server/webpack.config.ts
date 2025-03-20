@@ -1,9 +1,8 @@
-import path from 'path';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import { Configuration } from 'webpack';
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const config: Configuration = {
-  // Entry point for client code
+/** @type {import('webpack').Configuration} */
+const config = {
   entry: './src/client/main.ts',
   module: {
     rules: [
@@ -18,20 +17,19 @@ const config: Configuration = {
       },
     ],
   },
-  // Resolve these extensions to import without specifying them
   resolve: {
     extensions: ['.ts', '.js'],
   },
   output: {
-    filename: 'bundle.js', 
-    path: path.resolve(__dirname, '../../public'), // Output directory for production assets
+    filename: 'bundle.js',
+    path: path.resolve(process.cwd(), 'public'),
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/client/index.html', // Use index.html as a template
+      template: './src/client/index.html',
     }),
   ],
   mode: 'development',
 };
 
-export default config;
+module.exports = config;
