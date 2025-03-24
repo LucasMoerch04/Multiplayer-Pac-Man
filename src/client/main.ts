@@ -1,5 +1,6 @@
 import { io } from "socket.io-client";
 import './player';
+import'./CollisionBlocks';
 
 const socket = io(); // Connects to the server
 
