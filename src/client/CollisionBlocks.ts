@@ -3,18 +3,13 @@ import { deflateRaw } from "zlib";
 const canvas: HTMLCanvasElement = document.getElementById("gameCanvas") as HTMLCanvasElement;
 const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
-interface Boundary {
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    draw: () => void
-}
 
 
-class Boundaries implements Boundary {
+
+
+class Boundaries  {
     public width: number = 32;
-    public height: number = 32
+    public height: number = 32;
     constructor(
         public x: number,
         public y: number,
