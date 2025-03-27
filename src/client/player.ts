@@ -28,7 +28,7 @@ const player = {
 function updateBorders() {
     player.leftBorder = player.x;
     player.rightBorder = player.x + player.width;
-    player.topBorder = player.y; 
+    player.topBorder = player.y;
     player.bottomBorder = player.y + player.height;
     
 }
