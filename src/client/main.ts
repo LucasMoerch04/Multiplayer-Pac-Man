@@ -1,7 +1,9 @@
 import { io } from "socket.io-client";
+//Man skal huske at skrive sin fil her hvis man skal bruge den
 import './player';
 import'./CollisionBlocks';
 import './Collisionstext'
+import './style.css';
 
 const socket = io(); // Connects to the server
 
