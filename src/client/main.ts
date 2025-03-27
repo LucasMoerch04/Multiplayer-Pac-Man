@@ -13,7 +13,7 @@ socket.on('game-update', (data) => {
   console.log('Game update received:', data);
 });
 
-function sendGameEvent(eventData: any) {
+function sendGameEvent(eventData: GamepadEvent) {
   socket.emit('game-event', eventData);
 }
 

@@ -11,7 +11,7 @@ interface player{
     bottomBorder: number ,
     color: string,
 }
-var player = {
+const player = {
     // x og y er positionen af spilleren. Jeg har pt sat start positionen til at være midt i canvas
    x: (canvas.width/2),
    y: (canvas.height/2),
@@ -27,16 +27,16 @@ var player = {
 };
 function updateBorders() {
     player.leftBorder = player.x;
-    player.rightBorder = player.x + player.width
-    player.topBorder = player.y 
-    player.bottomBorder = player.y + player.height
+    player.rightBorder = player.x + player.width;
+    player.topBorder = player.y; 
+    player.bottomBorder = player.y + player.height;
     
 }
 function drawPlayer(){
     //først sættes fill style til at være  spillerens farve
     ctx.fillStyle = player.color;
     //en firkant på spillerens koordinater bliver tegnet med spillerens størrelse
-    ctx.fillRect(player.x, player.y, player.width, player.height)
+    ctx.fillRect(player.x, player.y, player.width, player.height);
     //obdatere positionen på spillerens hjørner
     updateBorders();
     drawHitbox();

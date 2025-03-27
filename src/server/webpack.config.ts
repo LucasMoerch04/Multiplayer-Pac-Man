@@ -1,6 +1,5 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-
+import path from "path";
+import HtmlWebpackPlugin from "html-webpack-plugin";
 /** @type {import('webpack').Configuration} */
 const config = {
   entry: './src/client/main.ts',
