@@ -56,10 +56,11 @@ _Project for P2 by SW2_
   ```bash
   git checkout -b feature/your-feature-name
   ```
+
 ### Running the project with Docker
-  ```bash
-  npm run docker:dev
-  ```
+
+```bash
+npm run docker:dev
+```
+
 Other commands can be found in the `package.json`.
-
-
