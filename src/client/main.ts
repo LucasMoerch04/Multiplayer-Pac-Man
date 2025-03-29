@@ -4,18 +4,12 @@ import './player';
 import './style.css';
 const socket = io(); // Connects to the server
 
-socket.on('connect', () => {
-  console.log('Connected to server via WebSocket');
+socket.on("connect", () => {
+  console.log("Connected to server with id:", socket.id);
+  socket.emit("newUser");
 });
 
-// Listen for game updates from the server
-socket.on('game-update', (data) => {
-  console.log('Game update received:', data);
+socket.on("updateCounter", (data) => {
+  console.log("Users conneceted:", data.countUsers);
+  (document.getElementById("userCounter") as HTMLElement).innerText = "Users Connected: " + data.countUsers;
 });
-
-function sendGameEvent(eventData: any) {
-  socket.emit('game-event', eventData);
-}
-
-// Expose function for testing or game logic
-(window as any).sendGameEvent = sendGameEvent;
