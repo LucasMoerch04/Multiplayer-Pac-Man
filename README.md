@@ -57,6 +57,19 @@ _Project for P2 by SW2_
   git checkout -b feature/your-feature-name
   ```
 
+## Linting and formatting
+  Linting commands
+  ```bash
+  npm run lint
+  ```
+  ```bash
+  npm run lint:fix
+  ```
+  Formatting command
+  ```bash
+  npm run format
+  ```
+  
 ### Running the project with Docker
 
 ```bash
