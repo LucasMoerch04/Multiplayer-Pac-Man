@@ -58,14 +58,14 @@ _Project for P2 by SW2_
   ```
 
 ## Linting and formatting
-  Linting commands
+- **Linting commands**
   ```bash
   npm run lint
   ```
   ```bash
   npm run lint:fix
   ```
-  Formatting command
+- **Formatting commands**
   ```bash
   npm run format
   ```
