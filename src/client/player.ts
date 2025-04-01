@@ -1,4 +1,4 @@
-import { Boundary } from './CollisionBlocks';
+import { Boundaries } from './CollisionBlocks';
 
 const canvas: HTMLCanvasElement = document.getElementById("gameCanvas") as HTMLCanvasElement;
 const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
@@ -66,7 +66,7 @@ class Player {
     }
     //laver denne function booleen så hvis det næste træk er inde i en collision block vil den returnere True
     //ellers vil den returnere False da det er default
-    checkCollision(direction: string, boundary: Boundary): boolean {
+    checkCollision(direction: string, boundary: Boundaries): boolean {
         switch (direction) {
             case 'right':
                 return (
@@ -110,7 +110,7 @@ localPlayer.draw();
 
 
 //Tegner én boundary lige nu. Skal opdateres til at lave et array med arrays af boundary blocks
-const testboundaries = new Boundary(0, 0);
+const testboundaries = new Boundaries(0, 0);
     testboundaries.draw();
 
 // Eventlistener tjekker efter om W,A,S,D bliver trykket
