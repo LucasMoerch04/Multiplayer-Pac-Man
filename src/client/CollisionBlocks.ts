@@ -38,7 +38,6 @@ for (let i=0 , j=-1; i < collisions.length; i++) {
         }
         console.log(collisions[i]);
         if (collisions[i] === 0) {
-            console.log("EWEWe");
             continue;
             // Doesn't insert anything if the value in the file is '0'
         } else if (collisions[i] === 1) {
