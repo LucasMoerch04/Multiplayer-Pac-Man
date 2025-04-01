@@ -56,10 +56,24 @@ _Project for P2 by SW2_
   ```bash
   git checkout -b feature/your-feature-name
   ```
-### Running the project with Docker
+
+## Linting and formatting
+- **Linting commands**
   ```bash
-  npm run docker:dev
+  npm run lint
   ```
+  ```bash
+  npm run lint:fix
+  ```
+- **Formatting commands**
+  ```bash
+  npm run format
+  ```
+  
+### Running the project with Docker
+
+```bash
+npm run docker:dev
+```
+
 Other commands can be found in the `package.json`.
-
-
