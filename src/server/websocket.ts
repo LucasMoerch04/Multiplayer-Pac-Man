@@ -1,4 +1,4 @@
-import { Server, Socket } from 'socket.io';
+import { Server, Socket } from "socket.io";
 
 // Initiate counter
 let countUsers: number = 0;
@@ -28,7 +28,6 @@ export function setupWebSocket(io: Server) {
       countUsers--;
       console.log('User disconnected');
       io.emit('updateCounter', { countUsers });  // broadcast again
-
     });
   });
 }
