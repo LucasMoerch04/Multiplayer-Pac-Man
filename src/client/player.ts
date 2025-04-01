@@ -13,9 +13,9 @@ class Player {
     public topBorder: number = 0;
     public bottomBorder: number = 0;
     //width, height og color skal ikke kunne skiftes i constructoren. derfor bliver initialiseret før
-    public width: number = 20;
-    public height: number = 20;
-    public color: string = "red";
+    public width: number = 32;
+    public height: number = 32;
+    public color: string = "yellow"
 
     constructor(
         //constructor så man kan lave en ny spiller på en vilkårlig x og y koordinat
@@ -103,7 +103,8 @@ class Player {
 }
 
 // laver en ny spiller i midten af canvas
-const localPlayer = new Player(canvas.width / 2, canvas.height / 2);
+const localPlayer = new Player(100, 100);
+
 // tegner spilleren
 localPlayer.draw();
 
@@ -152,6 +153,5 @@ switch (event.key) {
         } else {
             localPlayer.moveDown();
         }
-        break;
-}
+    }
 });
