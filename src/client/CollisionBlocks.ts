@@ -31,7 +31,7 @@ class Boundaries  {
 // What is in the CollisionBlock object
 
     // Console logging to confirm the positions of the collision blocks, delete at a later stage.
-let collisionblockArray: Boundaries[] = []
+const boundaryArray: Boundaries[] = [];
 for (let i=0 , j=-1; i < collisions.length; i++) {
         if (i % 52 === 0) {
             j++;
@@ -41,13 +41,11 @@ for (let i=0 , j=-1; i < collisions.length; i++) {
             continue;
             // Doesn't insert anything if the value in the file is '0'
         } else if (collisions[i] === 1) {
-            //insertCollisionBlock(j, i); // Inserts a collision block on the space
             const boundaries = new Boundaries(32 * (i % 52), 32 * j);
-            //This collision block is then pushed into an array containing all the collision blocks
-            collisionblockArray.push(boundaries);
-          
+            boundaryArray.push(boundaries);
+            boundaries.draw();
         } else {
             console.log("Error in file reading");
         }
 }
-export { Boundaries, collisionblockArray };
+export { Boundaries, boundaryArray };
