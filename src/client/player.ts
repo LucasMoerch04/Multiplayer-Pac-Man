@@ -1,4 +1,4 @@
-import { Boundaries } from './CollisionBlocks';
+import { Boundaries, boundaryArray } from './CollisionBlocks';
 
 const canvas: HTMLCanvasElement = document.getElementById("gameCanvas") as HTMLCanvasElement;
 const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
@@ -66,52 +66,64 @@ class Player {
     }
     //laver denne function booleen så hvis det næste træk er inde i en collision block vil den returnere True
     //ellers vil den returnere False da det er default
-    checkCollision(direction: string, boundary: Boundaries): boolean {
-        switch (direction) {
-            case 'right':
-                return (
-                    this.x + this.width + 5 >= boundary.x &&
-                    this.x <= boundary.x + boundary.width &&
-                    this.y + this.height >= boundary.y &&
-                    this.y <= boundary.y + boundary.height
-                );
-            case 'left':
-                return (
-                    this.x - 5 <= boundary.x + boundary.width &&
-                    this.x + this.width >= boundary.x &&
-                    this.y + this.height >= boundary.y &&
-                    this.y <= boundary.y + boundary.height
-                );
-            case 'up':
-                return (
-                    this.y - 5 <= boundary.y + boundary.height &&
-                    this.y + this.height >= boundary.y &&
-                    this.x + this.width >= boundary.x &&
-                    this.x <= boundary.x + boundary.width
-                );
-            case 'down':
-                return (
-                    this.y + this.height + 5 >= boundary.y &&
-                    this.y <= boundary.y + boundary.height &&
-                    this.x + this.width >= boundary.x &&
-                    this.x <= boundary.x + boundary.width
-                );
-            default:
-                return false;
+    checkCollision(direction: string, boundaries: Boundaries[]): boolean {
+        for (const boundary of boundaries) {
+            switch (direction) {
+                case 'right':
+                    if (
+                        this.x + this.width + 5 >= boundary.x &&
+                        this.x <= boundary.x + boundary.width &&
+                        this.y + this.height >= boundary.y &&
+                        this.y <= boundary.y + boundary.height
+                    ) {
+                        return true;
+                    }
+                    break;
+                case 'left':
+                    if (
+                        this.x - 5 <= boundary.x + boundary.width &&
+                        this.x + this.width >= boundary.x &&
+                        this.y + this.height >= boundary.y &&
+                        this.y <= boundary.y + boundary.height
+                    ) {
+                        return true;
+                    }
+                    break;
+                case 'up':
+                    if (
+                        this.y - 5 <= boundary.y + boundary.height &&
+                        this.y + this.height >= boundary.y &&
+                        this.x + this.width >= boundary.x &&
+                        this.x <= boundary.x + boundary.width
+                    ) {
+                        return true;
+                    }
+                    break;
+                case 'down':
+                    if (
+                        this.y + this.height + 5 >= boundary.y &&
+                        this.y <= boundary.y + boundary.height &&
+                        this.x + this.width >= boundary.x &&
+                        this.x <= boundary.x + boundary.width
+                    ) {
+                        return true;
+                    }
+                    break;
+            }
         }
+        return false;
     }
 }
-
 // laver en ny spiller i midten af canvas
-const localPlayer = new Player(100, 100);
+const localPlayer = new Player(70, 70);
 
 // tegner spilleren
 localPlayer.draw();
 
 
+
 //Tegner én boundary lige nu. Skal opdateres til at lave et array med arrays af boundary blocks
-const testboundaries = new Boundaries(0, 0);
-    testboundaries.draw();
+
 
 // Eventlistener tjekker efter om W,A,S,D bliver trykket
 document.addEventListener("keydown", function(event) {
@@ -120,7 +132,7 @@ document.addEventListener("keydown", function(event) {
 switch (event.key) {
     case "d":
     case "ArrowRight":
-        if (localPlayer.checkCollision('right', testboundaries)) {
+        if (localPlayer.checkCollision('right', boundaryArray)) {
             console.log("colliding right");
             return;
         } else {
@@ -129,7 +141,7 @@ switch (event.key) {
         break;
     case "a":
     case "ArrowLeft":
-        if (localPlayer.checkCollision('left', testboundaries)) {
+        if (localPlayer.checkCollision('left', boundaryArray)) {
             console.log("colliding left");
             return;
         } else {
@@ -138,7 +150,7 @@ switch (event.key) {
         break;
     case "w":
     case "ArrowUp":
-        if (localPlayer.checkCollision('up', testboundaries)) {
+        if (localPlayer.checkCollision('up', boundaryArray)) {
             console.log("colliding up");
             return;
         } else {
@@ -147,7 +159,7 @@ switch (event.key) {
         break;
     case "s":
     case "ArrowDown":
-        if (localPlayer.checkCollision('down', testboundaries)) {
+        if (localPlayer.checkCollision('down', boundaryArray)) {
             console.log("colliding down");
             return;
         } else {
