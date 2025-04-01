@@ -1,11 +1,13 @@
-import { Boundaries } from './CollisionBlocks';
+import { Boundary } from './CollisionBlocks';
 
 const canvas: HTMLCanvasElement = document.getElementById("gameCanvas") as HTMLCanvasElement;
 const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
-let collidingStatus: number = -1;
 //Det er en  Class da man så vil kunne oprette endnu en spille hvilke jeg tænker er nødvendigt i en multiplayer
+
+
 class Player {
     //Borders skal initialiseres før man kan bruge den i update border
+    //public er fordi dette er variable som kan tilgås alle steder fra
     public leftBorder: number = 0;
     public rightBorder: number = 0;
     public topBorder: number = 0;
@@ -13,7 +15,7 @@ class Player {
     //width, height og color skal ikke kunne skiftes i constructoren. derfor bliver initialiseret før
     public width: number = 20;
     public height: number = 20;
-    public color: string = "red"
+    public color: string = "red";
 
     constructor(
         //constructor så man kan lave en ny spiller på en vilkårlig x og y koordinat
@@ -34,6 +36,7 @@ class Player {
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x, this.y, this.width, this.height);
         this.updateBorders();
+        console.log("draw")
     
     }
 
@@ -63,7 +66,7 @@ class Player {
     }
     //laver denne function booleen så hvis det næste træk er inde i en collision block vil den returnere True
     //ellers vil den returnere False da det er default
-    checkCollision(direction: string, boundary: Boundaries): boolean {
+    checkCollision(direction: string, boundary: Boundary): boolean {
         switch (direction) {
             case 'right':
                 return (
@@ -100,42 +103,55 @@ class Player {
 }
 
 // laver en ny spiller i midten af canvas
-const player = new Player(canvas.width / 2, canvas.height / 2);
-
+const localPlayer = new Player(canvas.width / 2, canvas.height / 2);
 // tegner spilleren
-player.draw();
+localPlayer.draw();
+
 
 //Tegner én boundary lige nu. Skal opdateres til at lave et array med arrays af boundary blocks
-const testboundaries = new Boundaries(0, 0);
+const testboundaries = new Boundary(0, 0);
     testboundaries.draw();
 
 // Eventlistener tjekker efter om W,A,S,D bliver trykket
 document.addEventListener("keydown", function(event) {
     
 //!!!!!Måske kunne man lave dette til en switch så det er mere tydeligt hvad der sker
-    if (event.key === "d" || event.key ==="ArrowRight") {
-        if (player.checkCollision('right', testboundaries)) {
+switch (event.key) {
+    case "d":
+    case "ArrowRight":
+        if (localPlayer.checkCollision('right', testboundaries)) {
+            console.log("colliding right");
             return;
         } else {
-            player.moveRight();
+            localPlayer.moveRight();
         }
-    } else if (event.key === "a" || event.key === "ArrowLeft") {
-        if (player.checkCollision('left', testboundaries)) {
+        break;
+    case "a":
+    case "ArrowLeft":
+        if (localPlayer.checkCollision('left', testboundaries)) {
+            console.log("colliding left");
             return;
         } else {
-            player.moveLeft();
+            localPlayer.moveLeft();
         }
-    } else if (event.key === "w" || event.key === "ArrowUp") {
-        if (player.checkCollision('up', testboundaries)) {
+        break;
+    case "w":
+    case "ArrowUp":
+        if (localPlayer.checkCollision('up', testboundaries)) {
+            console.log("colliding up");
             return;
         } else {
-            player.moveUp();
+            localPlayer.moveUp();
         }
-    } else if (event.key === "s" || event.key === "ArrowDown") {
-        if (player.checkCollision('down', testboundaries)) {
+        break;
+    case "s":
+    case "ArrowDown":
+        if (localPlayer.checkCollision('down', testboundaries)) {
+            console.log("colliding down");
             return;
         } else {
-            player.moveDown();
+            localPlayer.moveDown();
         }
-    }
+        break;
+}
 });

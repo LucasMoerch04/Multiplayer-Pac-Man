@@ -2,6 +2,7 @@ import { io } from "socket.io-client";
 import './player';
 import'./CollisionBlocks';
 import './Collisionstext'
+import './Canvas'
 
 const socket = io(); // Connects to the server
 

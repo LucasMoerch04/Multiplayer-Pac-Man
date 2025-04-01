@@ -1,4 +1,3 @@
-import { deflateRaw } from "zlib";
 
 const canvas: HTMLCanvasElement = document.getElementById("gameCanvas") as HTMLCanvasElement;
 const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
@@ -7,7 +6,7 @@ const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
 
 
-class Boundaries  {
+class Boundary  {
     public width: number = 32;
     public height: number = 32;
     constructor(
@@ -16,15 +15,13 @@ class Boundaries  {
     ) {}
 
     draw(){
-    ctx.fillStyle = "red"
-    ctx.fillRect(this.x, this.y, this.width, this.height)
+    ctx.fillStyle = "red";
+    ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 }
-
-const boundaries = new Boundaries(0,0)
-
-
-
+//sådan her opretter du en ny collision block, parametrene er hvilke x og y koordinat blokken skal sættes på,
+// så skal du bare huske at kalde testboundaries.draw(); hvis du gerne ville kunne se den på skærmen
+const testboundaries = new Boundary(0, 0);
 
 //Lige nu indsætter den automatisk alle  collision blocks henover en row.
 //Når vi får importeret collision blocks fra tiled skal den opdateres til at gøre det for hver row
@@ -33,7 +30,7 @@ const boundaries = new Boundaries(0,0)
 //     const boundaries = new Boundaries(i,0)
 //     boundaries.draw()
 // }
-export { Boundaries, boundaries };
+export { Boundary};
 
 
 
