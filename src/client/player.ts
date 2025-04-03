@@ -1,4 +1,5 @@
-import { Boundaries, boundaryArray } from "./CollisionBlocks";
+import { Boundaries, boundaryArray } from './CollisionBlocks';
+import { backgroundImage } from './Canvas';
 
 const canvas: HTMLCanvasElement = document.getElementById(
   "gameCanvas",
@@ -38,79 +39,83 @@ class Player {
     this.updateBorders();
   }
 
-  moveRight() {
-    //bevæger karakteren ved at cleare den gamle firkant og derefter printe den 5px længere den ene vej
-    ctx.clearRect(this.x, this.y, this.width, this.height);
-    this.x += 5;
-    this.draw();
-  }
-
-  moveLeft() {
-    ctx.clearRect(this.x, this.y, this.width, this.height);
-    this.x -= 5;
-    this.draw();
-  }
-
-  moveUp() {
-    ctx.clearRect(this.x, this.y, this.width, this.height);
-    this.y -= 5;
-    this.draw();
-  }
-
-  moveDown() {
-    ctx.clearRect(this.x, this.y, this.width, this.height);
-    this.y += 5;
-    this.draw();
-  }
-  //laver denne function booleen så hvis det næste træk er inde i en collision block vil den returnere True
-  //ellers vil den returnere False da det er default
-  checkCollision(direction: string, boundaries: Boundaries[]): boolean {
-    for (const boundary of boundaries) {
-      switch (direction) {
-        case "right":
-          if (
-            this.x + this.width + 5 >= boundary.x &&
-            this.x <= boundary.x + boundary.width &&
-            this.y + this.height >= boundary.y &&
-            this.y <= boundary.y + boundary.height
-          ) {
-            return true;
-          }
-          break;
-        case "left":
-          if (
-            this.x - 5 <= boundary.x + boundary.width &&
-            this.x + this.width >= boundary.x &&
-            this.y + this.height >= boundary.y &&
-            this.y <= boundary.y + boundary.height
-          ) {
-            return true;
-          }
-          break;
-        case "up":
-          if (
-            this.y - 5 <= boundary.y + boundary.height &&
-            this.y + this.height >= boundary.y &&
-            this.x + this.width >= boundary.x &&
-            this.x <= boundary.x + boundary.width
-          ) {
-            return true;
-          }
-          break;
-        case "down":
-          if (
-            this.y + this.height + 5 >= boundary.y &&
-            this.y <= boundary.y + boundary.height &&
-            this.x + this.width >= boundary.x &&
-            this.x <= boundary.x + boundary.width
-          ) {
-            return true;
-          }
-          break;
-      }
+    moveRight() {
+        //bevæger karakteren ved at cleare den gamle firkant og derefter printe den 5px længere den ene vej
+        ctx.clearRect(this.x, this.y, this.width, this.height);
+        this.x += 5;
+        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+        this.draw();
     }
-    return false;
-  }
+
+    moveLeft() {
+        ctx.clearRect(this.x, this.y, this.width, this.height);
+        this.x -= 5;
+        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+        this.draw();
+    }
+
+    moveUp() {
+        ctx.clearRect(this.x, this.y, this.width, this.height);
+        this.y -= 5;
+        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+        this.draw();
+    }
+
+    moveDown() {
+        ctx.clearRect(this.x, this.y, this.width, this.height);
+        this.y += 5;
+        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+        this.draw();
+    }
+    //laver denne function booleen så hvis det næste træk er inde i en collision block vil den returnere True
+    //ellers vil den returnere False da det er default
+    checkCollision(direction: string, boundaries: Boundaries[]): boolean {
+        for (const boundary of boundaries) {
+            switch (direction) {
+                case 'right':
+                    if (
+                        this.x + this.width + 5 >= boundary.x &&
+                        this.x <= boundary.x + boundary.width &&
+                        this.y + this.height >= boundary.y &&
+                        this.y <= boundary.y + boundary.height
+                    ) {
+                        return true;
+                    }
+                    break;
+                case 'left':
+                    if (
+                        this.x - 5 <= boundary.x + boundary.width &&
+                        this.x + this.width >= boundary.x &&
+                        this.y + this.height >= boundary.y &&
+                        this.y <= boundary.y + boundary.height
+                    ) {
+                        return true;
+                    }
+                    break;
+                case 'up':
+                    if (
+                        this.y - 5 <= boundary.y + boundary.height &&
+                        this.y + this.height >= boundary.y &&
+                        this.x + this.width >= boundary.x &&
+                        this.x <= boundary.x + boundary.width
+                    ) {
+                        return true;
+                    }
+                    break;
+                case 'down':
+                    if (
+                        this.y + this.height + 5 >= boundary.y &&
+                        this.y <= boundary.y + boundary.height &&
+                        this.x + this.width >= boundary.x &&
+                        this.x <= boundary.x + boundary.width
+                    ) {
+                        return true;
+                    }
+                    break;
+            }
+        }
+        return false;
+    }
 }
 // laver en ny spiller i midten af canvas
 const localPlayer = new Player(70, 70);
@@ -119,6 +124,7 @@ const localPlayer = new Player(70, 70);
 localPlayer.draw();
 
 //Tegner én boundary lige nu. Skal opdateres til at lave et array med arrays af boundary blocks
+
 
 // Eventlistener tjekker efter om W,A,S,D bliver trykket
 document.addEventListener("keydown", function (event) {
