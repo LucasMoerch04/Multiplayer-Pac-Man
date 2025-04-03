@@ -8,8 +8,8 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 // Serve static files from the public directory
-app.use(express.static('public'));
-app.use(express.static('src/client'));
+app.use(express.static("public"));
+app.use(express.static("src/client"));
 app.use(express.static("public"));
 
 // Set up game-specific WebSocket event handling
