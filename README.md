@@ -58,6 +58,7 @@ _Project for P2 by SW2_
   ```
 
 ## Linting and formatting
+
 - **Linting commands**
   ```bash
   npm run lint
@@ -69,7 +70,7 @@ _Project for P2 by SW2_
   ```bash
   npm run format
   ```
-  
+
 ### Running the project with Docker
 
 ```bash

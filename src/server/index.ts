@@ -12,8 +12,8 @@ const io = new Server(server);
 console.log("Starting server..."); // Log here should only appear once
 
 // Serve static files from the public directory
-app.use(express.static('public'));
-app.use(express.static('src/client'));
+app.use(express.static("public"));
+app.use(express.static("src/client"));
 app.use(express.static("public"));
 
 // Set up game-specific WebSocket event handling

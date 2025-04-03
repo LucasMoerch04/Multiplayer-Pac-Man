@@ -1,7 +1,5 @@
-canvas{
-    
-    background-color: wheat;
-    transform: scale(0.5);
-    transform-origin: top left;
-
+canvas {
+  background-color: wheat;
+  transform: scale(0.5);
+  transform-origin: top left;
 }
