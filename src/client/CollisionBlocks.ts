@@ -43,7 +43,7 @@ for (let i=0 , j=-1; i < collisions.length; i++) {
         } else if (collisions[i] === 1) {
             const boundaries = new Boundaries(32 * (i % 52), 32 * j);
             boundaryArray.push(boundaries);
-            boundaries.draw();
+        //   boundaries.draw();  
         } else {
             console.log("Error in file reading");
         }
