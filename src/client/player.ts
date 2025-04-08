@@ -1,4 +1,4 @@
-
+/*
 
 import { Boundaries, boundaryArray } from './CollisionBlocks';
 import { backgroundImage } from './Canvas';
@@ -38,7 +38,6 @@ class Player {
     //tegner spilleren, hitboxen og opdatere borders
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
-    ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
     this.updateBorders();
   }
 
@@ -121,7 +120,7 @@ class Player {
 const localPlayer = new Player(canvas.width/2-10, canvas.height/2-10);
 
 // tegner spilleren
-localPlayer.draw();
+//localPlayer.draw();
 
 //Tegner én boundary lige nu. Skal opdateres til at lave et array med arrays af boundary blocks
 
@@ -167,3 +166,5 @@ document.addEventListener("keydown", function (event) {
       }
   }
 });
+
+*/

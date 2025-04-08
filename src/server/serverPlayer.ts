@@ -1,11 +1,10 @@
 import { backgroundImage } from '../client/Canvas';
 
 const canvas: HTMLCanvasElement = document.getElementById(
-    "gameCanvas",
-  ) as HTMLCanvasElement;
-  const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
+  "gameState",) as HTMLCanvasElement;
+const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
-export class Player {
+export class SPlayer {
     //Borders skal initialiseres før man kan bruge den i update border
     //public er fordi dette er variable som kan tilgås alle steder fra
     public leftBorder: number = 0;
@@ -30,11 +29,10 @@ export class Player {
         this.topBorder = this.y;
         this.bottomBorder = this.y + this.height;
       }
-    draw() {
-        //tegner spilleren, hitboxen og opdatere borders
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-        this.updateBorders();
-      }
+  draw() {
+    //tegner spilleren, hitboxen og opdatere borders
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+    this.updateBorders();
+    }
   }
