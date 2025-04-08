@@ -5,6 +5,12 @@ import "./CollisionBlocks";
 import "./Collisionstext";
 import "./Canvas";
 import "./style.css";
+import { Player } from "../server/serverPlayer";
+
+const canvas: HTMLCanvasElement = document.getElementById(
+  "gameCanvas",
+) as HTMLCanvasElement;
+const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
 const socket = io(); // Connects to the server
 
@@ -20,3 +26,35 @@ socket.on("updateCounter", (data) => {
   (document.getElementById("userCounter") as HTMLElement).innerText = "Users Connected: " + data.countUsers; // change the innertext of the htmlElement with id of "userCounter" to show user count
 });
 
+const player = new Player(100, 100, "red"); // Create a new player instance with x, y and color
+
+const players: { [key: string]: Player } = {};
+
+socket.on("updatePlayers", (backendPlayers) => {
+  for (const id in backendPlayers){
+    const backendPlayer = backendPlayers[id];
+
+    if (!players[id]) {
+      players[id] = new Player(backendPlayer.x, backendPlayer.y, backendPlayer.color);
+    } 
+    
+    for (const id in players ){
+      if(!backendPlayers[id]){
+        delete players[id]
+      }
+    }
+  }
+
+  console.log(players);
+});
+
+
+function animate() {
+  // Clear the canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw all players
+  for (const id in players) {
+    players[id].draw();
+  }
+}

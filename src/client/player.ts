@@ -1,3 +1,5 @@
+
+
 import { Boundaries, boundaryArray } from './CollisionBlocks';
 import { backgroundImage } from './Canvas';
 
@@ -36,6 +38,7 @@ class Player {
     //tegner spilleren, hitboxen og opdatere borders
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
     this.updateBorders();
   }
 
