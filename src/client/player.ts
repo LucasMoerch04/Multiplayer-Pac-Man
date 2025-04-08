@@ -4,7 +4,7 @@ import { Boundaries, boundaryArray } from './CollisionBlocks';
 import { backgroundImage } from './Canvas';
 
 const canvas: HTMLCanvasElement = document.getElementById(
-  "gameCanvas",
+  "gameState",
 ) as HTMLCanvasElement;
 const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 //Det er en  Class da man så vil kunne oprette endnu en spille hvilke jeg tænker er nødvendigt i en multiplayer
@@ -46,28 +46,25 @@ class Player {
         //bevæger karakteren ved at cleare den gamle firkant og derefter printe den 5px længere den ene vej
         ctx.clearRect(this.x, this.y, this.width, this.height);
         this.x += 5;
-        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+        
         this.draw();
     }
 
     moveLeft() {
         ctx.clearRect(this.x, this.y, this.width, this.height);
         this.x -= 5;
-        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
         this.draw();
     }
 
     moveUp() {
         ctx.clearRect(this.x, this.y, this.width, this.height);
         this.y -= 5;
-        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
         this.draw();
     }
 
     moveDown() {
         ctx.clearRect(this.x, this.y, this.width, this.height);
         this.y += 5;
-        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
         this.draw();
     }
     //laver denne function booleen så hvis det næste træk er inde i en collision block vil den returnere True
@@ -121,7 +118,7 @@ class Player {
     }
 }
 // laver en ny spiller i midten af canvas
-const localPlayer = new Player(70, 70);
+const localPlayer = new Player(canvas.width/2-10, canvas.height/2-10);
 
 // tegner spilleren
 localPlayer.draw();
