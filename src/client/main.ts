@@ -5,8 +5,8 @@ import "./CollisionBlocks";
 import "./Collisionstext";
 import "./Canvas";
 import "./style.css";
-import { SPlayer } from "../server/serverPlayer";
-
+import { SPlayer } from "./clientPlayer";
+import { boundaryArray } from "./CollisionBlocks";
 
 const canvas: HTMLCanvasElement = document.getElementById(
   "gameState",) as HTMLCanvasElement;
@@ -61,10 +61,12 @@ console.log(frontEndPlayers);
 function animate() {
   // Clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
 
   // Draw all players
   for (const id in frontEndPlayers) {
     frontEndPlayers[id].draw();
+    frontEndPlayers[id].drawCharacter(); // Call the drawCharacter method to draw the character texture
     
   }
 }
@@ -76,22 +78,45 @@ window.addEventListener("keydown", function (event) {
   switch (event.key) {
     case "w":
     case "ArrowUp":
-     socket.emit('keydown', 'keyU'); // Emit the keydown event to the server with the direction and socket id
+
+      if (frontEndPlayers[socket.id].checkCollision("up", boundaryArray)) {
+        console.log("colliding up");
+        return;
+      } else {
+        socket.emit('keydown', 'keyU'); // Emit the keydown event to the server with the direction and socket id
+      }
       break;
 
     case "a":
     case "ArrowLeft":
-     socket.emit('keydown', 'keyL'); // Emit the keydown event to the server with the direction and socket id
+
+      if (frontEndPlayers[socket.id].checkCollision("left", boundaryArray)) {
+        console.log("colliding left");
+        return;
+      } else {
+        socket.emit('keydown', 'keyL'); // Emit the keydown event to the server with the direction and socket id
+      }
       break;
 
     case "s":
     case "ArrowDown":
-      socket.emit('keydown', 'keyD'); // Emit the keydown event to the server with the direction and socket id
+
+      if (frontEndPlayers[socket.id].checkCollision("down", boundaryArray)) {
+        console.log("colliding down");
+        return;
+      } else {
+        socket.emit('keydown', 'keyD'); // Emit the keydown event to the server with the direction and socket id
+      }
       break;
 
     case "d":
     case "ArrowRight":
-      socket.emit('keydown', 'keyR'); // Emit the keydown event to the server with the direction and socket id
+      if (frontEndPlayers[socket.id].checkCollision("right", boundaryArray)) {
+        console.log("colliding right");
+        return;
+      } else {
+        socket.emit('keydown', 'keyR'); // Emit the keydown event to the server with the direction and socket id
+      }
       break;
   }
 });

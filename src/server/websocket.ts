@@ -1,5 +1,6 @@
 import { Server, Socket } from "socket.io";
-import { SPlayer } from "./serverPlayer";
+import { Boundaries, boundaryArray } from '../client/CollisionBlocks';
+
 // Initiate counter
 let countUsers: number = 0;
 
@@ -46,38 +47,44 @@ export function setupWebSocket(io: Server) {
       io.emit('updateCounter', { countUsers });  // broadcast again
     });
 
+
+    
     socket.on('keydown', (keycode) => {  // listen for keydown events from the client
       switch (keycode) {
-        case "w":
-        case "ArrowUp":
+        case "keyU":
           backEndPlayers[socket.id].y -= 5;  // move player up
+          console.log(backEndPlayers.y);
+          io.emit('updatePlayers', backEndPlayers);  // emit the updated players to all clients
 
           break;
-    
-        case "a":
-        case "ArrowLeft":
+
+        case "keyL":
           backEndPlayers[socket.id].x -= 5;  // move player left
+          io.emit('updatePlayers', backEndPlayers);  // emit the updated players to all clients
 
           break;
     
-        case "s":
-        case "ArrowDown":
+        case "keyD":
           backEndPlayers[socket.id].y += 5;  // move player down
+          io.emit('updatePlayers', backEndPlayers);  // emit the updated players to all clients
 
           break;
     
-        case "d":
-        case "ArrowRight":
+        case "keyR":
           backEndPlayers[socket.id].x += 5;  // move player right
+          io.emit('updatePlayers', backEndPlayers);  // emit the updated players to all clients
+
           
           break;
       }
 
   });
   });
-
+/*
   setInterval(() => {
     io.emit('updatePlayers', backEndPlayers);
   }, 15);
+*/
   }; 
+
 
