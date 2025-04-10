@@ -19,17 +19,27 @@ class PacMan implements Entity {
   constructor(x: number, y: number, speed: number = 4) {
     this.x = x;
     this.y = y;
-    this.width = 20;
-    this.height = 20;
+    this.width = 32;
+    this.height = 32;
     this.color = "yellow";
-    this.speed = speed;
+    this.speed = speed;            
   }
 
   move() {
-    this.x += Math.random() > 0.5 ? this.speed : -this.speed;
-    this.y += Math.random() > 0.5 ? this.speed : -this.speed;
-  }
-}
+    if (Math.random() > 0.5) {
+      this.x += this.speed;
+    } else {
+      this.x -= this.speed;
+    }
+  
+    if (Math.random() > 0.5) {
+      this.y += this.speed;
+    } else {
+      this.y -= this.speed;
+    }
+  } 
+
+}  
 
 // Class representing a Ghost character
 class Ghost implements Entity {
@@ -44,8 +54,8 @@ class Ghost implements Entity {
   constructor(x: number, y: number, color: string, playerId: string, speed: number = 3) {
     this.x = x;
     this.y = y;
-    this.width = 20;
-    this.height = 20;
+    this.width = 32;
+    this.height = 32;
     this.color = color;
     this.playerId = playerId;
     this.speed = speed;
@@ -68,18 +78,3 @@ class Ghost implements Entity {
     }
   }
 }
-
-// Test logic
-const pacman = new PacMan(50, 50);
-const ghost = new Ghost(100, 100, "red", "player1");
-
-console.log("Before move:");
-console.log("PacMan:", pacman);
-console.log("Ghost:", ghost);
-
-pacman.move();
-ghost.move("left");
-
-console.log("After move:");
-console.log("PacMan:", pacman);
-console.log("Ghost:", ghost);

@@ -1,0 +1,23 @@
+FROM node:16-alpine
+
+WORKDIR /app
+
+# Copy package files and install dependencies (including dev dependencies)
+COPY package*.json ./
+RUN npm install
+
+# Create a non-root user and change ownership of /app
+RUN adduser -D appuser && chown -R appuser:appuser /app
+
+# Copy the rest of the project files
+COPY . .
+
+# Create the public directory and fix permissions
+RUN mkdir -p /app/public && chown -R appuser:appuser /app/public
+
+EXPOSE 3000
+
+# Switch to non-root user
+USER appuser
+
+CMD ["npm", "run", "dev"]

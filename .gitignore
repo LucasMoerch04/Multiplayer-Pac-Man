@@ -3,6 +3,7 @@
 
 # Build output directories
 /public
+/dist
 
 # TypeScript build info
 *.tsbuildinfo
