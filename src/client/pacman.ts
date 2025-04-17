@@ -2,7 +2,7 @@ const canvas: HTMLCanvasElement = document.getElementById(
     "gameState",) as HTMLCanvasElement;
   const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
   
-  export class SPlayer {
+  export class Pacman {
     public leftBorder: number = 0;
     public rightBorder: number = 0;
     public topBorder: number = 0;

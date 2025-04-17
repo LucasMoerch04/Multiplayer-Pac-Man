@@ -17,6 +17,7 @@ let countUsers: number = 0;
 */
 export function setupWebSocket(io: Server) {
   const backEndPlayers: { [key: string]: { x: number; y: number; color: string } } = {};
+  const pacMan: { [key: string]: { x: number; y: number; color: string } } = {};
 
   io.on('connection', (socket: Socket) => {  // listen for client connections
     console.log('A user connected', socket.id);
@@ -29,11 +30,11 @@ export function setupWebSocket(io: Server) {
 
     io.emit('updatePlayers', backEndPlayers);  // emit the new player to all clients
 
-    console.log(backEndPlayers);
+    //console.log(backEndPlayers);
 
     socket.on('newUser', () => {  // listen for newUser emits from a client
       countUsers++;
-      console.log(countUsers);
+      //console.log(countUsers);
       io.emit('updateCounter', { countUsers });  // broadcast the updated user count to all client
     });
 
@@ -47,6 +48,13 @@ export function setupWebSocket(io: Server) {
       io.emit('updateCounter', { countUsers });  // broadcast again
     });
 
+    pacMan[0] = {
+      x: 100,
+      y: 100,
+      color: 'red'
+    }
+
+    io.emit('updatePacMan', pacMan);  // emit the powerUps to all clients
 
     
     socket.on('keydown', (keycode) => {  // listen for keydown events from the client
@@ -82,7 +90,8 @@ export function setupWebSocket(io: Server) {
   });
 /*
   setInterval(() => {
-    io.emit('updatePlayers', backEndPlayers);
+
+    io.emit('updatePacMan', pacMan);  // emit the powerUps to all clients
   }, 15);
 */
   }; 

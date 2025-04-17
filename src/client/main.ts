@@ -1,12 +1,13 @@
 import { io } from "socket.io-client";
 //Man skal huske at skrive sin fil her hvis man skal bruge den
-import "./player";
 import "./CollisionBlocks";
 import "./Collisionstext";
 import "./Canvas";
 import "./style.css";
 import { SPlayer } from "./clientPlayer";
 import { boundaryArray } from "./CollisionBlocks";
+import { Pacman } from "./pacman";
+
 
 const canvas: HTMLCanvasElement = document.getElementById(
   "gameState",) as HTMLCanvasElement;
@@ -29,6 +30,16 @@ socket.on("updateCounter", (data) => {
 //const player = new SPlayer(70,70, "red"); // Create a new player instance with x, y and color
 
 const frontEndPlayers: { [key: string]: SPlayer } = {};
+const frontEndPacMan: { [x: string]: Pacman } = {};
+
+socket.on("updatePacMan", (backendPacMan) => {
+    frontEndPacMan[0] = new Pacman(backendPacMan[0].x, backendPacMan[0].y, backendPacMan[0].color);
+    frontEndPacMan[0].draw(); // Draw the PacMan on the canvas
+
+    animatePacMan();
+
+  }
+);
 
 socket.on("updatePlayers", (backendPlayers) => {
   for (const id in backendPlayers){
@@ -50,26 +61,34 @@ socket.on("updatePlayers", (backendPlayers) => {
   }
   
 
-  animate(); // Call the animate function to draw the players on the canvas
+  animatePlayers(); // Call the animate function to draw the players on the canvas
 
   
+  
 
-console.log(frontEndPlayers);
+//console.log(frontEndPlayers);
 });
 ;
 
-function animate() {
+function animatePlayers() {
   // Clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   
-
+  
   // Draw all players
   for (const id in frontEndPlayers) {
     frontEndPlayers[id].draw();
     frontEndPlayers[id].drawCharacter(); // Call the drawCharacter method to draw the character texture
-    
   }
 }
+
+function animatePacMan(){
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  frontEndPacMan[0].draw(); 
+  frontEndPacMan[0].drawCharacter(); // Call the drawCharacter method to draw the character texture
+}
+
+
 
 
 window.addEventListener("keydown", function (event) {
@@ -80,9 +99,9 @@ window.addEventListener("keydown", function (event) {
     case "ArrowUp":
 
       if (frontEndPlayers[socket.id].checkCollision("up", boundaryArray)) {
-        console.log("colliding up");
         return;
       } else {
+        frontEndPlayers[socket.id].y -= 5; // Move the player up by 5 pixels
         socket.emit('keydown', 'keyU'); // Emit the keydown event to the server with the direction and socket id
       }
       break;
@@ -91,9 +110,9 @@ window.addEventListener("keydown", function (event) {
     case "ArrowLeft":
 
       if (frontEndPlayers[socket.id].checkCollision("left", boundaryArray)) {
-        console.log("colliding left");
         return;
       } else {
+        frontEndPlayers[socket.id].x -= 5; // Move the player left by 5 pixels
         socket.emit('keydown', 'keyL'); // Emit the keydown event to the server with the direction and socket id
       }
       break;
@@ -102,9 +121,9 @@ window.addEventListener("keydown", function (event) {
     case "ArrowDown":
 
       if (frontEndPlayers[socket.id].checkCollision("down", boundaryArray)) {
-        console.log("colliding down");
         return;
       } else {
+        frontEndPlayers[socket.id].y += 5; // Move the player down by 5 pixels
         socket.emit('keydown', 'keyD'); // Emit the keydown event to the server with the direction and socket id
       }
       break;
@@ -112,9 +131,9 @@ window.addEventListener("keydown", function (event) {
     case "d":
     case "ArrowRight":
       if (frontEndPlayers[socket.id].checkCollision("right", boundaryArray)) {
-        console.log("colliding right");
         return;
       } else {
+        frontEndPlayers[socket.id].x += 5; // Move the player right by 5 pixels
         socket.emit('keydown', 'keyR'); // Emit the keydown event to the server with the direction and socket id
       }
       break;
