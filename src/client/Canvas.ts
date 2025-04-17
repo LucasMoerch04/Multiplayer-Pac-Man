@@ -11,4 +11,11 @@ backgroundImage.onload = () => {
     console.log(backgroundImage)
   };
 
-export {backgroundImage}
+
+
+
+const characterTexture = new Image();
+characterTexture.src = "../game-assets/inky.png";
+
+
+export {backgroundImage, characterTexture}

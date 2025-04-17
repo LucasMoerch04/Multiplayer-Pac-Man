@@ -37,7 +37,7 @@ for (let i=0 , j=-1; i < collisions.length; i++) {
         if (i % 52 === 0) {
             j++;
         }
-        console.log(collisions[i]);
+        // console.log(collisions[i]);
         if (collisions[i] === 0) {
             continue;
             // Doesn't insert anything if the value in the file is '0'
