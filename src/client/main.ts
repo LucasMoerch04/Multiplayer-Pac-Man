@@ -33,13 +33,20 @@ const frontEndPlayers: { [key: string]: SPlayer } = {};
 const frontEndPacMan: { [x: string]: Pacman } = {};
 
 socket.on("updatePacMan", (backendPacMan) => {
-    frontEndPacMan[0] = new Pacman(backendPacMan[0].x, backendPacMan[0].y, backendPacMan[0].color);
-    frontEndPacMan[0].draw(); // Draw the PacMan on the canvas
-
+  if(!frontEndPacMan[0]) {
+  frontEndPacMan[0] = new Pacman(backendPacMan[0].x, backendPacMan[0].y, backendPacMan[0].color);
+  frontEndPacMan[0].draw(); // Draw the PacMan on the canvas
+  }
     animatePacMan();
 
   }
 );
+
+socket.on("pacManStatus", () => {
+  console.log("Pacman eaten!");
+  frontEndPacMan[0].x = Math.random() * canvas.width; // Randomize the x position of PacMan
+  frontEndPacMan[0].y = Math.random() * canvas.height; // Randomize the y position of PacMan
+});
 
 socket.on("updatePlayers", (backendPlayers) => {
   for (const id in backendPlayers){
@@ -103,6 +110,9 @@ window.addEventListener("keydown", function (event) {
       } else {
         frontEndPlayers[socket.id].y -= 5; // Move the player up by 5 pixels
         socket.emit('keydown', 'keyU'); // Emit the keydown event to the server with the direction and socket id
+        if(frontEndPlayers[socket.id].checkCollisionWithPacman(frontEndPacMan[0])){
+          socket.emit('eatPacman', socket.id);
+        }
       }
       break;
 
@@ -114,6 +124,9 @@ window.addEventListener("keydown", function (event) {
       } else {
         frontEndPlayers[socket.id].x -= 5; // Move the player left by 5 pixels
         socket.emit('keydown', 'keyL'); // Emit the keydown event to the server with the direction and socket id
+        if(frontEndPlayers[socket.id].checkCollisionWithPacman(frontEndPacMan[0])){
+          socket.emit('eatPacman', socket.id);
+        }
       }
       break;
 
@@ -125,6 +138,9 @@ window.addEventListener("keydown", function (event) {
       } else {
         frontEndPlayers[socket.id].y += 5; // Move the player down by 5 pixels
         socket.emit('keydown', 'keyD'); // Emit the keydown event to the server with the direction and socket id
+        if(frontEndPlayers[socket.id].checkCollisionWithPacman(frontEndPacMan[0])){
+          socket.emit('eatPacman', socket.id);
+        }
       }
       break;
 
@@ -135,6 +151,9 @@ window.addEventListener("keydown", function (event) {
       } else {
         frontEndPlayers[socket.id].x += 5; // Move the player right by 5 pixels
         socket.emit('keydown', 'keyR'); // Emit the keydown event to the server with the direction and socket id
+        if(frontEndPlayers[socket.id].checkCollisionWithPacman(frontEndPacMan[0])){
+          socket.emit('eatPacman', socket.id);
+        }
       }
       break;
   }

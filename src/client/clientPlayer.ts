@@ -83,5 +83,18 @@ const canvas: HTMLCanvasElement = document.getElementById(
       }
       return false;
     }
+
+    checkCollisionWithPacman(pacman: { x: number; y: number; width: number; height: number }): boolean {
+      if (
+        this.x < pacman.x + pacman.width &&
+        this.x + this.width > pacman.x &&
+        this.y < pacman.y + pacman.height &&
+        this.y + this.height > pacman.y
+      ){
+        return true; // Collision detected
+      } else {
+        return false; // No collision
+      }
+    }
   }
   
