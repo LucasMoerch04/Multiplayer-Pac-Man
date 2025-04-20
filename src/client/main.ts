@@ -30,23 +30,48 @@ socket.on("updateCounter", (data) => {
 //const player = new SPlayer(70,70, "red"); // Create a new player instance with x, y and color
 
 const frontEndPlayers: { [key: string]: SPlayer } = {};
-const frontEndPacMan: { [x: string]: Pacman } = {};
+const frontEndPacMan: Pacman[] = [];
+
 
 socket.on("updatePacMan", (backendPacMan) => {
-  if(!frontEndPacMan[0]) {
-  frontEndPacMan[0] = new Pacman(backendPacMan[0].x, backendPacMan[0].y, backendPacMan[0].color);
-  frontEndPacMan[0].draw(); // Draw the PacMan on the canvas
-  }
-    animatePacMan();
+  if (!frontEndPacMan[0]) {
+    frontEndPacMan[0] = new Pacman(
+      backendPacMan[0].x,
+      backendPacMan[0].y,
+      backendPacMan[0].color,
+      backendPacMan[0].speed
+    );
+  } else {
+    const current = frontEndPacMan[0];
+    const newX = backendPacMan[0].x;
+    const newY = backendPacMan[0].y;
 
-  }
-);
+    let direction: "up" | "down" | "left" | "right" | null = null;
 
-socket.on("pacManStatus", () => {
-  console.log("Pacman eaten!");
-  frontEndPacMan[0].x = Math.random() * canvas.width; // Randomize the x position of PacMan
-  frontEndPacMan[0].y = Math.random() * canvas.height; // Randomize the y position of PacMan
+    if (newY < current.y) direction = "up";
+    else if (newY > current.y) direction = "down";
+    else if (newX < current.x) direction = "left";
+    else if (newX > current.x) direction = "right";
+
+    if (direction && !current.checkCollision(direction, boundaryArray)) {
+      // Check for collision before updating position
+      current.x = newX;
+      current.y = newY;
+    }
+  }
+
+  animate();
 });
+
+
+
+socket.on("pacManStatus", (backendPacMan) => {
+  console.log("Pacman eaten!");
+  frontEndPacMan[0].x = backendPacMan[0].x; // Update PacMan's position
+  frontEndPacMan[0].y = backendPacMan[0].y; // Update PacMan's position
+  animate(); // Opdater canvas med ny position
+});
+
 
 socket.on("updatePlayers", (backendPlayers) => {
   for (const id in backendPlayers){
@@ -68,7 +93,7 @@ socket.on("updatePlayers", (backendPlayers) => {
   }
   
 
-  animatePlayers(); // Call the animate function to draw the players on the canvas
+  animate(); // Call the animate function to draw the players on the canvas
 
   
   
@@ -77,23 +102,22 @@ socket.on("updatePlayers", (backendPlayers) => {
 });
 ;
 
-function animatePlayers() {
-  // Clear the canvas
+function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  
-  // Draw all players
+
+  // Tegn PacMan
+  if (frontEndPacMan[0]) {
+    frontEndPacMan[0].draw();
+    frontEndPacMan[0].drawCharacter();
+  }
+
+  // Tegn spillere
   for (const id in frontEndPlayers) {
     frontEndPlayers[id].draw();
-    frontEndPlayers[id].drawCharacter(); // Call the drawCharacter method to draw the character texture
+    frontEndPlayers[id].drawCharacter();
   }
 }
 
-function animatePacMan(){
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  frontEndPacMan[0].draw(); 
-  frontEndPacMan[0].drawCharacter(); // Call the drawCharacter method to draw the character texture
-}
 
 
 

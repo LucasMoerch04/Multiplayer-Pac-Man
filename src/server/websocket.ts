@@ -1,5 +1,7 @@
 import { Server, Socket } from "socket.io";
-import { Boundaries, boundaryArray } from '../client/CollisionBlocks';
+import { boundaryArray } from '../client/CollisionBlocks';
+
+
 
 // Initiate counter
 let countUsers: number = 0;
@@ -17,7 +19,7 @@ let countUsers: number = 0;
 */
 export function setupWebSocket(io: Server) {
   const backEndPlayers: { [key: string]: { x: number; y: number; color: string; speed: number } } = {};
-  const pacMan: { [key: string]: { x: number; y: number; color: string } } = {};
+  const pacMan: { [key: string]: { x: number; y: number; color: string; speed: number } } = {};
 
   io.on('connection', (socket: Socket) => {  // listen for client connections
     console.log('A user connected', socket.id);
@@ -52,40 +54,48 @@ export function setupWebSocket(io: Server) {
     pacMan[0] = {
       x: 70,
       y: 70,
-      color: 'red'
+      color: 'red',
+      speed: 6
     }
 
     io.emit('updatePacMan', pacMan);  // emit the powerUps to all clients
 
-    socket.on('eatPacman', (player) => {  // listen for eatPacman emits from a client
-      console.log("eatPacman", player);
+    socket.on('eatPacman', (playerId) => {
+      console.log("eatPacman", playerId);
+    
+      // Reset position
+      pacMan[0].x = 1200 * Math.random();
+      pacMan[0].y = 1500 * Math.random();
+    
+      io.emit('updatePacMan', pacMan);
+      io.emit('pacManStatus', pacMan);
+    });
+    
 
-      //Output to all players that pac man is eaten
-      io.emit('pacManStatus');  // emit the updated players to all clients
-
-      }
-    );
-
-      setInterval(() => {
-        if(pacMan[0]){
-          const randomDirection = Math.floor(Math.random() * 4); // 0: up, 1: down, 2: left, 3: right
-          switch (randomDirection) {
-            case 0:
-              pacMan[0].y -= 5; // Move up
-              break;
-            case 1:
-              pacMan[0].y += 5; // Move down
-              break;
-            case 2:
-              pacMan[0].x -= 5; // Move left
-              break;
-            case 3:
-              pacMan[0].x += 5; // Move right
-              break;
-          }
+    setInterval(() => {
+      if (pacMan[0]) {
+        const direction = Math.floor(Math.random() * 4);
+        switch (direction) {
+          case 0:
+            pacMan[0].y -= 5;
+            break;
+          case 1:
+            pacMan[0].y += 5;
+            break;
+          case 2:
+            pacMan[0].x -= 5;
+            break;
+          case 3:
+            pacMan[0].x += 5;
+            break;
         }
-        io.emit('updatePacMan', pacMan); // Emit the updated PacMan position to all clients
-      }, 1000); // Adjust the interval as needed (currently set to 1 second)
+    
+        // Emit til alle spillere
+        io.emit("updatePacMan", pacMan);
+      }
+    }, 1000);
+    
+    
     
 
     socket.on('keydown', (keycode) => {  // listen for keydown events from the client
@@ -123,27 +133,8 @@ export function setupWebSocket(io: Server) {
   });
   });
 
-  function randomPacManMovement(){
-    // Randomly move PacMan every 1000ms (1 second)
-    setInterval(() => {
-      const randomDirection = Math.floor(Math.random() * 4); // 0: up, 1: down, 2: left, 3: right
-      switch (randomDirection) {
-        case 0:
-          pacMan[0].y -= 5; // Move up
-          break;
-        case 1:
-          pacMan[0].y += 5; // Move down
-          break;
-        case 2:
-          pacMan[0].x -= 5; // Move left
-          break;
-        case 3:
-          pacMan[0].x += 5; // Move right
-          break;
-      }
-      io.emit('updatePacMan', pacMan); // Emit the updated PacMan position to all clients
-    }, 1000); // Adjust the interval as needed (currently set to 1 second)
-  }
+
+  
 
 
   }; 

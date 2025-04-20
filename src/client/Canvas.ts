@@ -12,3 +12,4 @@ backgroundImage.onload = () => {
   };
 
 export {backgroundImage}
+export {canvas}
