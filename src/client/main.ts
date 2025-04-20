@@ -53,7 +53,7 @@ socket.on("updatePlayers", (backendPlayers) => {
     const backendPlayer = backendPlayers[id];
 
     if (!frontEndPlayers[id]) {
-      frontEndPlayers[id] = new SPlayer(backendPlayer.x, backendPlayer.y, backendPlayer.color);
+      frontEndPlayers[id] = new SPlayer(backendPlayer.x, backendPlayer.y, backendPlayer.color, backendPlayer.speed); // Create a new player instance if it doesn't exist
     } else {
       frontEndPlayers[id].x = backendPlayer.x;
       frontEndPlayers[id].y = backendPlayer.y;
@@ -108,7 +108,7 @@ window.addEventListener("keydown", function (event) {
       if (frontEndPlayers[socket.id].checkCollision("up", boundaryArray)) {
         return;
       } else {
-        frontEndPlayers[socket.id].y -= 5; // Move the player up by 5 pixels
+        frontEndPlayers[socket.id].y -= frontEndPlayers[socket.id].speed; // Move the player up by 5 pixels
         socket.emit('keydown', 'keyU'); // Emit the keydown event to the server with the direction and socket id
         if(frontEndPlayers[socket.id].checkCollisionWithPacman(frontEndPacMan[0])){
           socket.emit('eatPacman', socket.id);
@@ -122,7 +122,7 @@ window.addEventListener("keydown", function (event) {
       if (frontEndPlayers[socket.id].checkCollision("left", boundaryArray)) {
         return;
       } else {
-        frontEndPlayers[socket.id].x -= 5; // Move the player left by 5 pixels
+        frontEndPlayers[socket.id].x -= frontEndPlayers[socket.id].speed; // Move the player left by 5 pixels
         socket.emit('keydown', 'keyL'); // Emit the keydown event to the server with the direction and socket id
         if(frontEndPlayers[socket.id].checkCollisionWithPacman(frontEndPacMan[0])){
           socket.emit('eatPacman', socket.id);
@@ -136,7 +136,7 @@ window.addEventListener("keydown", function (event) {
       if (frontEndPlayers[socket.id].checkCollision("down", boundaryArray)) {
         return;
       } else {
-        frontEndPlayers[socket.id].y += 5; // Move the player down by 5 pixels
+        frontEndPlayers[socket.id].y += frontEndPlayers[socket.id].speed; // Move the player down by 5 pixels
         socket.emit('keydown', 'keyD'); // Emit the keydown event to the server with the direction and socket id
         if(frontEndPlayers[socket.id].checkCollisionWithPacman(frontEndPacMan[0])){
           socket.emit('eatPacman', socket.id);
@@ -149,7 +149,7 @@ window.addEventListener("keydown", function (event) {
       if (frontEndPlayers[socket.id].checkCollision("right", boundaryArray)) {
         return;
       } else {
-        frontEndPlayers[socket.id].x += 5; // Move the player right by 5 pixels
+        frontEndPlayers[socket.id].x += frontEndPlayers[socket.id].speed; // Move the player right by 5 pixels
         socket.emit('keydown', 'keyR'); // Emit the keydown event to the server with the direction and socket id
         if(frontEndPlayers[socket.id].checkCollisionWithPacman(frontEndPacMan[0])){
           socket.emit('eatPacman', socket.id);

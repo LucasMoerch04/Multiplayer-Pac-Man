@@ -12,11 +12,13 @@ const canvas: HTMLCanvasElement = document.getElementById(
     public x: number;
     public y: number;
     public color: string;
+    public speed: number;
   
-    constructor(x: number, y: number, color: string) {
+    constructor(x: number, y: number, color: string, speed: number) {
       this.x = x;
       this.y = y;
       this.color = color;
+      this.speed = speed;
     }
   
     updateBorders() {
@@ -49,7 +51,7 @@ const canvas: HTMLCanvasElement = document.getElementById(
         switch (direction) {
           case 'right':
             if (
-              this.x + this.width + 5 >= boundary.x &&
+              this.x + this.width + this.speed >= boundary.x &&
               this.x <= boundary.x + boundary.width &&
               this.y + this.height >= boundary.y &&
               this.y <= boundary.y + boundary.height
@@ -57,7 +59,7 @@ const canvas: HTMLCanvasElement = document.getElementById(
             break;
           case 'left':
             if (
-              this.x - 5 <= boundary.x + boundary.width &&
+              this.x - this.speed <= boundary.x + boundary.width &&
               this.x + this.width >= boundary.x &&
               this.y + this.height >= boundary.y &&
               this.y <= boundary.y + boundary.height
@@ -65,7 +67,7 @@ const canvas: HTMLCanvasElement = document.getElementById(
             break;
           case 'up':
             if (
-              this.y - 5 <= boundary.y + boundary.height &&
+              this.y - this.speed <= boundary.y + boundary.height &&
               this.y + this.height >= boundary.y &&
               this.x + this.width >= boundary.x &&
               this.x <= boundary.x + boundary.width
@@ -73,7 +75,7 @@ const canvas: HTMLCanvasElement = document.getElementById(
             break;
           case 'down':
             if (
-              this.y + this.height + 5 >= boundary.y &&
+              this.y + this.height + this.speed >= boundary.y &&
               this.y <= boundary.y + boundary.height &&
               this.x + this.width >= boundary.x &&
               this.x <= boundary.x + boundary.width
