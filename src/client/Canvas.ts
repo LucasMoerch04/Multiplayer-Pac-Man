@@ -3,7 +3,7 @@ const canvas: HTMLCanvasElement = document.getElementById(
 ) as HTMLCanvasElement;
 const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 //Jeg kan simpelhent ikke få det til at fungere at den henter baggrunden hvis baggrunden befinder sig i  game-assets
-const backgroundImage = new Image();
+export const backgroundImage = new Image();
 backgroundImage.src = "game-assets/Background.png";
 console.log(backgroundImage);
 backgroundImage.onload = () => {
@@ -14,8 +14,14 @@ backgroundImage.onload = () => {
 
 
 
-const characterTexture = new Image();
+export const characterTexture = new Image();
 characterTexture.src = "../game-assets/inky.png";
 
 
-export {backgroundImage, characterTexture}
+export const redbull = new Image();
+redbull.src = "../game-assets/Redbull.png";
+console.log(redbull);
+redbull.onload = () => {
+    console.log(redbull)
+  };
+

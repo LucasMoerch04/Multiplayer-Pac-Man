@@ -1,6 +1,12 @@
+import { io } from "socket.io-client";
+import { socket } from "./main";
+import { redbull } from "./Canvas";
+
 const canvas: HTMLCanvasElement = document.getElementById(
-    "gameState",) as HTMLCanvasElement;
+  "gameState"
+) as HTMLCanvasElement;
 const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
+
 
 
 class PowerObject {
@@ -21,12 +27,17 @@ class PowerObject {
   }
 
   drawObject() {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    // Ensure the image is loaded before drawing
+    ctx.drawImage(redbull, this.x, this.y, this.width, this.height);
   }
 
   // Collision detection method
-  isColliding(playerX: number, playerY: number, playerWidth: number, playerHeight: number): boolean {
+  isColliding(
+    playerX: number,
+    playerY: number,
+    playerWidth: number,
+    playerHeight: number
+  ): boolean {
     return (
       playerX < this.x + this.width &&
       playerX + playerWidth > this.x &&
@@ -36,25 +47,52 @@ class PowerObject {
   }
 }
 
-export const powerObjects: PowerObject[] = Array.from({ length: 3 }, () => {
-  const randomX = Math.floor(Math.random() * (canvas.width - 32)); // Ensure it fits within canvas
-  const randomY = Math.floor(Math.random() * (canvas.height - 32)); // Ensure it fits within canvas
-  return new PowerObject(randomX, randomY, "blue");
-});
-//this function returns the index of the object that the player is colliding with
-export function getCollidingPowerObjectIndex(playerX: number, playerY: number, playerWidth: number, playerHeight: number): number | null {
-  for (let i = 0; i < powerObjects.length; i++) {
-    if (powerObjects[i].isColliding(playerX, playerY, playerWidth, playerHeight)) {
-      return i; // Returnere det index spilleren rammer
+export const speedObjects: PowerObject[] = [
+  new PowerObject(560, 620, "blue"),
+  new PowerObject(50, 1420, "blue"),
+  new PowerObject(1550, 370, "blue"),
+  // new PowerObject(canvas.width/2, canvas.width/2-100, "blue"),
+];
+
+// This function returns the index of the object that the player is colliding with
+export function SpeedObjectCollision(
+  playerX: number,
+  playerY: number,
+  playerWidth: number,
+  playerHeight: number
+): number | null {
+  for (let i = 0; i < speedObjects.length; i++) {
+    if (speedObjects[i].isColliding(playerX, playerY, playerWidth, playerHeight)) {
+      speedObjects.splice(i, 1);
+      return i;
     }
   }
-  return null; // hvis intet er ramt returneres null
+  return -1; // If nothing is hit, return null
 }
 
-//This function removes the object that the player is colliding with
-export function removePowerObjectAtIndex(index: number): void {
-  if (index >= 0 && index < powerObjects.length) {
-    powerObjects.splice(index, 1); // Fjerner det object spilleren har ramt
+
+export const teleportObject: PowerObject[] = [
+  new PowerObject(290, 710, "blue"),
+  new PowerObject(290+32, 710, "blue"),
+  new PowerObject(928, 1350, "blue"),
+  new PowerObject(928+32, 1350, "blue"),
+];
+export function teleportObjectObjectCollision(
+  playerX: number,
+  playerY: number,
+  playerWidth: number,
+  playerHeight: number
+): number | null {
+  for (let i = 0; i < teleportObject.length; i++) {
+    if (teleportObject[i].isColliding(playerX, playerY, playerWidth, playerHeight)) {
+      console.log(`Colliding with teleport object at index ${i}:`, i);
+      return i;
+    }
   }
+  return -1;
 }
+
+
+
+
 

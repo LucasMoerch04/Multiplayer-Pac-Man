@@ -8,7 +8,8 @@ import "./style.css";
 import { SPlayer } from "./clientPlayer";
 import { characterTexture } from "./Canvas";
 import { boundaryArray } from "./CollisionBlocks";
-import { removePowerObjectAtIndex, getCollidingPowerObjectIndex, powerObjects} from "./Powers";
+import {SpeedObjectCollision, speedObjects,
+        teleportObject, teleportObjectObjectCollision} from "./Powers";
 
 const canvas: HTMLCanvasElement = document.getElementById(
   "gameState",) as HTMLCanvasElement;
@@ -50,9 +51,7 @@ socket.on("updatePlayers", (backendPlayers) => {
       }
     }
   }
-  
 
-  console.log(frontEndPlayers);
 });
 
 function animate() {
@@ -64,9 +63,10 @@ function animate() {
     const player = frontEndPlayers[id];
     ctx.drawImage(characterTexture, player.x, player.y, player.width, player.height);
   }
-  powerObjects.forEach((powerObject) => {
-    powerObject.drawObject();
+  speedObjects.forEach((speedObject) => {
+    speedObject.drawObject();
   });
+  
   
   // Request the next frame
   requestAnimationFrame(animate);
@@ -81,13 +81,19 @@ window.addEventListener("keydown", function (event) {
 
   const player = frontEndPlayers[socket.id];
   //This is constantly checking if a player has collided with a object and if so it returns the index of the object
-  const collidingIndex = getCollidingPowerObjectIndex(player.x, player.y, player.width, player.height);
-  //Each time a button is pressed this checks if a index has been returned of an instance where the player
-  // is colliding with a object
-  if (collidingIndex !== null) {
-    console.log(`Colliding with power object at index: ${collidingIndex}`);
-    removePowerObjectAtIndex(collidingIndex);
+  const collidingSpeed = SpeedObjectCollision(player.x, player.y, player.width, player.height);
+  if (collidingSpeed !== null && collidingSpeed >= 0) {
+    console.log("Emitting Speed with value: true");
+    socket.emit('speedBoost', true);
   }
+  //Returns the index of the Teleporter Object the player is colliding with
+  const collidingTeleport = teleportObjectObjectCollision(player.x, player.y, player.width, player.height);
+  //Emits the index if the player is colliding with a teleporter
+  if (collidingTeleport !== null && collidingTeleport >= 0){
+    console.log(`Emitting teleport with value: ${collidingTeleport}:`,collidingTeleport);
+    socket.emit('Teleport', collidingTeleport);
+  }
+
 
   switch (event.key) {
     case "w":

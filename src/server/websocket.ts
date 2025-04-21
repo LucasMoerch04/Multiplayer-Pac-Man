@@ -47,9 +47,65 @@ export function setupWebSocket(io: Server) {
 
       io.emit('updateCounter', { countUsers });  // broadcast again
     });
+//The speed boost event 
+    socket.on('speedBoost', (booleanValue) => {
+      console.log('Received booleanEvent on server:', booleanValue);
+      
+  // Set velocity to 10 for all players excluding the player who triggered the event
+  for (const id in backEndPlayers) {
+    if (id !== socket.id) { // Exclude the triggering player
+      backEndPlayers[id].velocity = 10;
+    }
+  }
+  //The player who triggered the event has the velocity lowered
+  backEndPlayers[socket.id].velocity = 2;
+  io.emit('updatePlayers', backEndPlayers);//updates players after triggering the event
+
+  // Reset velocity to 5 for all players after 10 seconds
+  setTimeout(() => {
+    for (const id in backEndPlayers) {
+      
+        backEndPlayers[id].velocity = 5;
+      
+    }
+    io.emit('updatePlayers', backEndPlayers);//Lowering the velocity after the event is over
+  }, 10000); // 10 seconds
+});
+//Teleporter event
+socket.on('Teleport', (number) => {
+  switch(number){
+    //if the player collides with either of the left teleporter blocks their coordinats is set to the right teleporter
+    case 0:
+    case 1:
+      backEndPlayers[socket.id].x = 928-32;
+      backEndPlayers[socket.id].y = 1350 + 32;
+      io.emit('updatePlayers', backEndPlayers);
+      break;
+      //if the player collides with either of the right teleporter blocks their coordinats is set to the left teleporter
+    case 2:
+    case 3:
+      backEndPlayers[socket.id].x = 290- 32;
+      backEndPlayers[socket.id].y = 710 + 32;
+      io.emit('updatePlayers', backEndPlayers);
+      break;
+  }
+
+  // This is a penalty for taking the teleport
+  backEndPlayers[socket.id].velocity = 2;
+  io.emit('updatePlayers', backEndPlayers);//updates players after triggering the event
+
+  // Reset velocity to 5 for all players after 10 seconds
+  setTimeout(() => {
+   
+      
+        backEndPlayers[socket.id].velocity = 5;
+      
+    //updating so the players velocity is returned to 5
+    io.emit('updatePlayers', backEndPlayers);
+  }, 10000); // 10 seconds
+});
 
 
-    
     socket.on('keydown', (keycode) => {  // listen for keydown events from the client
       switch (keycode) {
         case "keyU":
@@ -75,17 +131,17 @@ export function setupWebSocket(io: Server) {
           backEndPlayers[socket.id].x += backEndPlayers[socket.id].velocity;  // move player right
           io.emit('updatePlayers', backEndPlayers);  // emit the updated players to all clients
 
-          
           break;
       }
+    });
 
-  });
+   
   });
 /*
   setInterval(() => {
     io.emit('updatePlayers', backEndPlayers);
   }, 15);
 */
-  }; 
+};
 
 
