@@ -1,10 +1,10 @@
 // Define a common structure for game entities
 interface Entity {
-  x: number;         // X-coordinate (horizontal position)
-  y: number;         // Y-coordinate (vertical position)
-  width: number;     // Width of the entity
-  height: number;    // Height of the entity
-  color: string;     // Color used for rendering the entity
+  x: number; // X-coordinate (horizontal position)
+  y: number; // Y-coordinate (vertical position)
+  width: number; // Width of the entity
+  height: number; // Height of the entity
+  color: string; // Color used for rendering the entity
 }
 
 // Class representing the Pac-Man character
@@ -22,7 +22,7 @@ class PacMan implements Entity {
     this.width = 32;
     this.height = 32;
     this.color = "yellow";
-    this.speed = speed;            
+    this.speed = speed;
   }
 
   move() {
@@ -31,15 +31,14 @@ class PacMan implements Entity {
     } else {
       this.x -= this.speed;
     }
-  
+
     if (Math.random() > 0.5) {
       this.y += this.speed;
     } else {
       this.y -= this.speed;
     }
-  } 
-
-}  
+  }
+}
 
 // Class representing a Ghost character
 class Ghost implements Entity {
@@ -51,7 +50,13 @@ class Ghost implements Entity {
   speed: number;
   playerId: string;
 
-  constructor(x: number, y: number, color: string, playerId: string, speed: number = 3) {
+  constructor(
+    x: number,
+    y: number,
+    color: string,
+    playerId: string,
+    speed: number = 3,
+  ) {
     this.x = x;
     this.y = y;
     this.width = 32;

@@ -1,4 +1,6 @@
-const canvas: HTMLCanvasElement = document.getElementById("gameState") as HTMLCanvasElement;
+const canvas: HTMLCanvasElement = document.getElementById(
+  "gameState",
+) as HTMLCanvasElement;
 const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
 export class Pacman {
@@ -42,13 +44,22 @@ export class Pacman {
       ctx.drawImage(characterTexture, this.x, this.y, this.width, this.height);
     } else {
       characterTexture.onload = () => {
-        ctx.drawImage(characterTexture, this.x, this.y, this.width, this.height);
+        ctx.drawImage(
+          characterTexture,
+          this.x,
+          this.y,
+          this.width,
+          this.height,
+        );
       };
     }
   }
 
   // Check for collisions with the boundaries in a specific direction
-  checkCollision(direction: "up" | "down" | "left" | "right", boundaries: { x: number; y: number; width: number; height: number }[]): boolean {
+  checkCollision(
+    direction: "up" | "down" | "left" | "right",
+    boundaries: { x: number; y: number; width: number; height: number }[],
+  ): boolean {
     for (const boundary of boundaries) {
       switch (direction) {
         case "up":

@@ -1,4 +1,4 @@
-canvas{
+canvas {
   position: absolute;
   top: 10;
   left: 0;
@@ -14,5 +14,5 @@ canvas{
 
 #gameState {
   /*Sætter dette canvas forest*/
-  z-index: 2; 
+  z-index: 2;
 }
