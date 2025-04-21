@@ -36,16 +36,25 @@ class PowerObject {
   }
 }
 
-// Ensure canvas dimensions are set
-
-const canvasWidth = 1664; // Define canvas dimensions
-const canvasHeight = 1664;
-
 export const powerObjects: PowerObject[] = Array.from({ length: 3 }, () => {
-  const randomX = Math.floor(Math.random() * (canvasWidth - 32)); // Ensure it fits within canvas
-  const randomY = Math.floor(Math.random() * (canvasHeight - 32)); // Ensure it fits within canvas
+  const randomX = Math.floor(Math.random() * (canvas.width - 32)); // Ensure it fits within canvas
+  const randomY = Math.floor(Math.random() * (canvas.height - 32)); // Ensure it fits within canvas
   return new PowerObject(randomX, randomY, "blue");
 });
+//this function returns the index of the object that the player is colliding with
+export function getCollidingPowerObjectIndex(playerX: number, playerY: number, playerWidth: number, playerHeight: number): number | null {
+  for (let i = 0; i < powerObjects.length; i++) {
+    if (powerObjects[i].isColliding(playerX, playerY, playerWidth, playerHeight)) {
+      return i; // Returnere det index spilleren rammer
+    }
+  }
+  return null; // hvis intet er ramt returneres null
+}
 
-
+//This function removes the object that the player is colliding with
+export function removePowerObjectAtIndex(index: number): void {
+  if (index >= 0 && index < powerObjects.length) {
+    powerObjects.splice(index, 1); // Fjerner det object spilleren har ramt
+  }
+}
 

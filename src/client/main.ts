@@ -8,7 +8,7 @@ import "./style.css";
 import { SPlayer } from "./clientPlayer";
 import { characterTexture } from "./Canvas";
 import { boundaryArray } from "./CollisionBlocks";
-import { powerObjects} from "./Powers";
+import { removePowerObjectAtIndex, getCollidingPowerObjectIndex, powerObjects} from "./Powers";
 
 const canvas: HTMLCanvasElement = document.getElementById(
   "gameState",) as HTMLCanvasElement;
@@ -75,68 +75,55 @@ function animate() {
 // Start the animation loop
 requestAnimationFrame(animate);
 
+
 window.addEventListener("keydown", function (event) {
-  if (!socket.id || !frontEndPlayers[socket.id]) return; // Check if socket.id is defined and the player exists in the frontEndPlayers object
-  //!!!!!Måske kunne man lave dette til en switch så det er mere tydeligt hvad der sker
+  if (!socket.id || !frontEndPlayers[socket.id]) return;
+
+  const player = frontEndPlayers[socket.id];
+  //This is constantly checking if a player has collided with a object and if so it returns the index of the object
+  const collidingIndex = getCollidingPowerObjectIndex(player.x, player.y, player.width, player.height);
+  //Each time a button is pressed this checks if a index has been returned of an instance where the player
+  // is colliding with a object
+  if (collidingIndex !== null) {
+    console.log(`Colliding with power object at index: ${collidingIndex}`);
+    removePowerObjectAtIndex(collidingIndex);
+  }
+
   switch (event.key) {
     case "w":
     case "ArrowUp":
-
-      if (frontEndPlayers[socket.id].checkCollision("up", boundaryArray)) {
+      if (player.checkCollision("up", boundaryArray)) {
         console.log("colliding up");
         return;
-      } else {
-        if ((frontEndPlayers[socket.id].checkCollision("up", powerObjects))){
-          console.log("colliding with PO");
-          //Skal indsætte en funktion som returnere index på hvilke object spilleren collider med
-        };
-        socket.emit('keydown', 'keyU'); // Emit the keydown event to the server with the direction and socket id
       }
+      socket.emit('keydown', 'keyU');
       break;
 
     case "a":
     case "ArrowLeft":
-
-      if (frontEndPlayers[socket.id].checkCollision("left", boundaryArray)) {
+      if (player.checkCollision("left", boundaryArray)) {
         console.log("colliding left");
         return;
-      } else {
-        if ((frontEndPlayers[socket.id].checkCollision("left", powerObjects))){
-          console.log("colliding with PO");
-          //Skal indsætte en funktion som returnere index på hvilke object spilleren collider med
-        };
-        socket.emit('keydown', 'keyL'); // Emit the keydown event to the server with the direction and socket id
       }
+      socket.emit('keydown', 'keyL');
       break;
 
     case "s":
     case "ArrowDown":
-
-      if (frontEndPlayers[socket.id].checkCollision("down", boundaryArray)) {
+      if (player.checkCollision("down", boundaryArray)) {
         console.log("colliding down");
         return;
-      } else {
-        if ((frontEndPlayers[socket.id].checkCollision("down", powerObjects))){
-          console.log("colliding with PO");
-          //Skal indsætte en funktion som returnere index på hvilke object spilleren collider med
-        };
-        socket.emit('keydown', 'keyD'); // Emit the keydown event to the server with the direction and socket id
       }
+      socket.emit('keydown', 'keyD');
       break;
 
     case "d":
     case "ArrowRight":
-      if (frontEndPlayers[socket.id].checkCollision("right", boundaryArray)) {
+      if (player.checkCollision("right", boundaryArray)) {
         console.log("colliding right");
         return;
       }
-      else {
-         if ((frontEndPlayers[socket.id].checkCollision("right", powerObjects))){
-          console.log("colliding with PO");
-          //Skal indsætte en funktion som returnere index på hvilke object spilleren collider med
-         };
-        socket.emit('keydown', 'keyR'); // Emit the keydown event to the server with the direction and socket id
-      }
+      socket.emit('keydown', 'keyR');
       break;
   }
 });
