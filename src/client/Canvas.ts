@@ -7,8 +7,9 @@ const backgroundImage = new Image();
 backgroundImage.src = "game-assets/Background.png";
 console.log(backgroundImage);
 backgroundImage.onload = () => {
-    ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-    console.log(backgroundImage)
-  };
+  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+  console.log(backgroundImage);
+};
 
-export {backgroundImage}
+export { backgroundImage };
+export { canvas };
