@@ -5,11 +5,13 @@ import "./Collisionstext";
 import"./Powers";
 import "./Canvas";
 import "./style.css";
-import { SPlayer } from "./clientPlayer";
+import { SPlayer } from "../server/entities";
+import { Pacman } from "../server/entities";
 import { boundaryArray } from "./CollisionBlocks";
 import {SpeedObjectCollision, speedObjects,
         teleportObject, teleportObjectObjectCollision} from "./Powers";
 import { Pacman } from "./pacman";
+
 
 const canvas: HTMLCanvasElement = document.getElementById(
   "gameState",) as HTMLCanvasElement;
@@ -19,13 +21,13 @@ export const socket = io(); // Connects to the server
 
 // On connection to socket, prints socket id and emits newUser function
 socket.on("connect", () => {
-  console.log("Connected to server with id:", socket.id);
+  console.log("Connected to server with id:", socket);
   socket.emit("newUser");
 });
 
 // After receiving updateCounter call, print the data given as argument
 socket.on("updateCounter", (data) => {
-  console.log("Users conneceted:", data.countUsers);
+  console.log("Users connected:", data.countUsers);
   (document.getElementById("userCounter") as HTMLElement).innerText =
     "Users Connected: " + data.countUsers; // change the innertext of the htmlElement with id of "userCounter" to show user count
 });
@@ -44,21 +46,21 @@ socket.on("updatePacMan", (backendPacMan) => {
       backendPacMan[0].speed,
     );
   } else {
-    const current = frontEndPacMan[0];
-    const newX = backendPacMan[0].x;
-    const newY = backendPacMan[0].y;
+    const currentPacMan = frontEndPacMan[0];
+    const updatedPacManX = backendPacMan[0].x;
+    const updatedPacManY = backendPacMan[0].y;
 
     let direction: "up" | "down" | "left" | "right" | null = null;
 
-    if (newY < current.y) direction = "up";
-    else if (newY > current.y) direction = "down";
-    else if (newX < current.x) direction = "left";
-    else if (newX > current.x) direction = "right";
+    if (updatedPacManY < currentPacMan.y) direction = "up";
+    else if (updatedPacManY > currentPacMan.y) direction = "down";
+    else if (updatedPacManX < currentPacMan.x) direction = "left";
+    else if (updatedPacManX > currentPacMan.x) direction = "right";
 
-    if (direction && !current.checkCollision(direction, boundaryArray)) {
+    if (direction && !currentPacMan.checkCollision(direction, boundaryArray)) {
       // Check for collision before updating position
-      current.x = newX;
-      current.y = newY;
+      currentPacMan.x = updatedPacManX;
+      currentPacMan.y = updatedPacManY;
     }
   }
 
@@ -98,8 +100,6 @@ socket.on("updatePlayers", (backendPlayers) => {
   }
 
   animate(); // Call the animate function to draw the players on the canvas
-
-  //console.log(frontEndPlayers);
 });
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -107,13 +107,13 @@ function animate() {
   // Tegn PacMan
   if (frontEndPacMan[0]) {
     frontEndPacMan[0].draw();
-    frontEndPacMan[0].drawCharacter();
+    frontEndPacMan[0].initialize();
   }
 
   // Tegn spillere
   for (const id in frontEndPlayers) {
-    // frontEndPlayers[id].draw();
-    frontEndPlayers[id].drawCharacter();
+    frontEndPlayers[id].draw();
+    frontEndPlayers[id].initialize();
   }
 
   speedObjects.forEach((speedObject) => {

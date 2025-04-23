@@ -63,7 +63,7 @@ export function setupWebSocket(io: Server) {
       speed: 6,
     };
 
-    io.emit("updatePacMan", pacMan); // emit the powerUps to all clients
+    io.emit("updatePacMan", pacMan);
 
     socket.on("eatPacman", (playerId) => {
       console.log("eatPacman", playerId);
@@ -79,19 +79,16 @@ export function setupWebSocket(io: Server) {
     setInterval(() => {
       if (pacMan[0]) {
         const direction = Math.floor(Math.random() * 4);
-        switch (direction) {
-          case 0:
-            pacMan[0].y -= 5;
-            break;
-          case 1:
-            pacMan[0].y += 5;
-            break;
-          case 2:
-            pacMan[0].x -= 5;
-            break;
-          case 3:
-            pacMan[0].x += 5;
-            break;
+        if (Math.random() > 0.5) {
+          pacMan[0].x += pacMan[0].speed;
+        } else {
+          pacMan[0].x -= pacMan[0].speed;
+        }
+    
+        if (Math.random() > 0.5) {
+          pacMan[0].y += pacMan[0].speed;
+        } else {
+          pacMan[0].y -= pacMan[0].speed;
         }
 
         // Emit til alle spillere
