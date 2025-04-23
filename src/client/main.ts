@@ -2,18 +2,20 @@ import { io } from "socket.io-client";
 //Man skal huske at skrive sin fil her hvis man skal bruge den
 import "./CollisionBlocks";
 import "./Collisionstext";
+import"./Powers";
 import "./Canvas";
 import "./style.css";
 import { SPlayer } from "./clientPlayer";
 import { boundaryArray } from "./CollisionBlocks";
+import {SpeedObjectCollision, speedObjects,
+        teleportObject, teleportObjectObjectCollision} from "./Powers";
 import { Pacman } from "./pacman";
 
 const canvas: HTMLCanvasElement = document.getElementById(
-  "gameState",
-) as HTMLCanvasElement;
+  "gameState",) as HTMLCanvasElement;
 const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
-const socket = io(); // Connects to the server
+export const socket = io(); // Connects to the server
 
 // On connection to socket, prints socket id and emits newUser function
 socket.on("connect", () => {
@@ -85,6 +87,7 @@ socket.on("updatePlayers", (backendPlayers) => {
       frontEndPlayers[id].x = backendPlayer.x;
       frontEndPlayers[id].y = backendPlayer.y;
       frontEndPlayers[id].color = backendPlayer.color;
+      frontEndPlayers[id].speed = backendPlayer.speed;
     }
 
     for (const id in frontEndPlayers) {
@@ -109,14 +112,34 @@ function animate() {
 
   // Tegn spillere
   for (const id in frontEndPlayers) {
-    frontEndPlayers[id].draw();
+    // frontEndPlayers[id].draw();
     frontEndPlayers[id].drawCharacter();
   }
+
+  speedObjects.forEach((speedObject) => {
+    speedObject.drawObject();
+  });
 }
 
 window.addEventListener("keydown", function (event) {
   if (!socket.id || !frontEndPlayers[socket.id]) return; // Check if socket.id is defined and the player exists in the frontEndPlayers object
   //!!!!!Måske kunne man lave dette til en switch så det er mere tydeligt hvad der sker
+  const player = frontEndPlayers[socket.id];
+  //This is constantly checking if a player has collided with a object and if so it returns the index of the object
+  const collidingSpeed = SpeedObjectCollision(player.x, player.y, player.width, player.height);
+  if (collidingSpeed !== null && collidingSpeed >= 0) {
+    console.log("Emitting Speed with value: true");
+    socket.emit('speedBoost', true);
+  }
+  //Returns the index of the Teleporter Object the player is colliding with
+  const collidingTeleport = teleportObjectObjectCollision(player.x, player.y, player.width, player.height);
+  //Emits the index if the player is colliding with a teleporter
+  if (collidingTeleport !== null && collidingTeleport >= 0){
+    console.log(`Emitting teleport with value: ${collidingTeleport}:`,collidingTeleport);
+    socket.emit('Teleport', collidingTeleport);
+  }
+
+
   switch (event.key) {
     case "w":
     case "ArrowUp":
@@ -182,4 +205,7 @@ window.addEventListener("keydown", function (event) {
       }
       break;
   }
+  
 });
+//const player = new SPlayer(70,70, "red"); // Create a new player instance with x, y and color
+
