@@ -4,9 +4,9 @@ import "./CollisionBlocks";
 import "./Collisionstext";
 import "./Canvas";
 import "./style.css";
-import { SPlayer } from "./clientPlayer";
+import { SPlayer } from "../server/entities";
+import { Pacman } from "../server/entities";
 import { boundaryArray } from "./CollisionBlocks";
-import { Pacman } from "./pacman";
 
 const canvas: HTMLCanvasElement = document.getElementById(
   "gameState",
@@ -42,21 +42,21 @@ socket.on("updatePacMan", (backendPacMan) => {
       backendPacMan[0].speed,
     );
   } else {
-    const current = frontEndPacMan[0];
-    const newX = backendPacMan[0].x;
-    const newY = backendPacMan[0].y;
+    const currentPacMan = frontEndPacMan[0];
+    const updatedPacManX = backendPacMan[0].x;
+    const updatedPacManY = backendPacMan[0].y;
 
     let direction: "up" | "down" | "left" | "right" | null = null;
 
-    if (newY < current.y) direction = "up";
-    else if (newY > current.y) direction = "down";
-    else if (newX < current.x) direction = "left";
-    else if (newX > current.x) direction = "right";
+    if (updatedPacManY < currentPacMan.y) direction = "up";
+    else if (updatedPacManY > currentPacMan.y) direction = "down";
+    else if (updatedPacManX < currentPacMan.x) direction = "left";
+    else if (updatedPacManX > currentPacMan.x) direction = "right";
 
-    if (direction && !current.checkCollision(direction, boundaryArray)) {
+    if (direction && !currentPacMan.checkCollision(direction, boundaryArray)) {
       // Check for collision before updating position
-      current.x = newX;
-      current.y = newY;
+      currentPacMan.x = updatedPacManX;
+      currentPacMan.y = updatedPacManY;
     }
   }
 
@@ -102,13 +102,13 @@ function animate() {
   // Tegn PacMan
   if (frontEndPacMan[0]) {
     frontEndPacMan[0].draw();
-    frontEndPacMan[0].drawCharacter();
+    frontEndPacMan[0].initialize();
   }
 
   // Tegn spillere
   for (const id in frontEndPlayers) {
     frontEndPlayers[id].draw();
-    frontEndPlayers[id].drawCharacter();
+    frontEndPlayers[id].initialize();
   }
 }
 
