@@ -10,12 +10,8 @@ import { Pacman } from "../server/entities";
 import { boundaryArray } from "./CollisionBlocks";
 import {SpeedObjectCollision, speedObjects,
         teleportObject, teleportObjectObjectCollision} from "./Powers";
-import { Pacman } from "./pacman";
+import { fgCtx, fgCanvas } from "./Canvas";
 
-
-const canvas: HTMLCanvasElement = document.getElementById(
-  "gameState",) as HTMLCanvasElement;
-const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
 export const socket = io(); // Connects to the server
 
@@ -102,7 +98,7 @@ socket.on("updatePlayers", (backendPlayers) => {
   animate(); // Call the animate function to draw the players on the canvas
 });
 function animate() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  fgCtx.clearRect(0, 0, fgCanvas.width, fgCanvas.height);
 
   // Tegn PacMan
   if (frontEndPacMan[0]) {

@@ -1,10 +1,5 @@
 import { collisions } from "./Collisionstext";
-
-const canvas: HTMLCanvasElement = document.getElementById(
-  "gameCanvas",
-) as HTMLCanvasElement;
-const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
-
+import { bgCtx } from "./Canvas";
 class Boundaries {
   public width: number = 32;
   public height: number = 32;
@@ -14,8 +9,8 @@ class Boundaries {
   ) {}
 
   draw() {
-    ctx.fillStyle = "red";
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    bgCtx.fillStyle = "red";
+    bgCtx.fillRect(this.x, this.y, this.width, this.height);
   }
 }
 //sådan her opretter du en ny collision block, parametrene er hvilke x og y koordinat blokken skal sættes på,

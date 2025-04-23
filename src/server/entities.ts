@@ -1,7 +1,4 @@
-const canvas: HTMLCanvasElement = document.getElementById(
-  "gameState",
-) as HTMLCanvasElement;
-const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
+import { fgCtx, fgCanvas } from "../client/Canvas";
 
 interface Entity {
   x: number;
@@ -44,8 +41,8 @@ abstract class BaseEntity implements Entity {
   }
 
   draw() {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    fgCtx.fillStyle = this.color;
+    fgCtx.fillRect(this.x, this.y, this.width, this.height);
     this.updateBorders();
   }
 
@@ -53,10 +50,10 @@ abstract class BaseEntity implements Entity {
     const characterTexture = new Image();
     characterTexture.src = "../game-assets/inky.png";
     if (characterTexture.complete) {
-      ctx.drawImage(characterTexture, this.x, this.y, this.width, this.height);
+      fgCtx.drawImage(characterTexture, this.x, this.y, this.width, this.height);
     } else {
       characterTexture.onload = () => {
-        ctx.drawImage(characterTexture, this.x, this.y, this.width, this.height);
+        fgCtx.drawImage(characterTexture, this.x, this.y, this.width, this.height);
       };
     }
   }

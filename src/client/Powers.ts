@@ -1,12 +1,5 @@
-import { io } from "socket.io-client";
-import { socket } from "./main";
 import { redbull } from "./Canvas";
-
-const canvas: HTMLCanvasElement = document.getElementById(
-  "gameState"
-) as HTMLCanvasElement;
-const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
-
+import { fgCtx } from "./Canvas";
 
 
 class PowerObject {
@@ -28,7 +21,7 @@ class PowerObject {
 
   drawObject() {
     // Ensure the image is loaded before drawing
-    ctx.drawImage(redbull, this.x, this.y, this.width, this.height);
+    fgCtx.drawImage(redbull, this.x, this.y, this.width, this.height);
   }
 
   // Collision detection method
