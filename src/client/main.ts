@@ -8,7 +8,7 @@ import "./style.css";
 import { SPlayer } from "../server/entities";
 import { Pacman } from "../server/entities";
 import { boundaryArray } from "./CollisionBlocks";
-import {SpeedObjectCollision, speedObjects,
+import {pacmanCherry, pacmanCherryCollision, SpeedObjectCollision, speedObjects,
         teleportObject, teleportObjectObjectCollision} from "./Powers";
 import { fgCtx, fgCanvas } from "./Canvas";
 
@@ -115,6 +115,12 @@ function animate() {
   speedObjects.forEach((speedObject) => {
     speedObject.drawObject();
   });
+
+  pacmanCherry.forEach((pacmanCherry)=> {
+    fgCtx.fillStyle = pacmanCherry.color
+    fgCtx.fillRect(pacmanCherry.x, pacmanCherry.y, pacmanCherry.width, pacmanCherry.height)
+  });
+
 }
 
 window.addEventListener("keydown", function (event) {
@@ -133,6 +139,15 @@ window.addEventListener("keydown", function (event) {
   if (collidingTeleport !== null && collidingTeleport >= 0){
     console.log(`Emitting teleport with value: ${collidingTeleport}:`,collidingTeleport);
     socket.emit('Teleport', collidingTeleport);
+  }
+
+
+  const cherryColliding = pacmanCherryCollision(player.x, player.y, player.x, player.y);
+  if (cherryColliding !== null && cherryColliding >= 0) {
+    //Der sendes en boleen så man kan slå pacman angry mode til
+    socket.emit('CherryCollision', true);
+    //Der sendes indexet på hvilke kirsebær pacman har ramt 
+    socket.emit('CherryIndex', cherryColliding)
   }
 
 

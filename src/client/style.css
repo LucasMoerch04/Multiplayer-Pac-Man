@@ -10,6 +10,7 @@ canvas {
 #gameCanvas {
   /*Sætter dette canvas bagerst*/
   z-index: 1;
+
 }
 
 #gameState {

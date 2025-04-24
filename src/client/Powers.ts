@@ -86,6 +86,29 @@ export function teleportObjectObjectCollision(
 }
 
 
+export const pacmanCherry: PowerObject[] = [
+  new PowerObject(80, 80, "red"),
+  new PowerObject(200, 200, "red"),
+  new PowerObject(300, 300, "red"),
+
+];
+export function pacmanCherryCollision(
+  playerX: number,
+  playerY: number,
+  playerWidth: number,
+  playerHeight: number
+): number | null {
+  for (let i = 0; i < pacmanCherry.length; i++) {
+    if (pacmanCherry[i].isColliding(playerX, playerY, playerWidth, playerHeight)) {
+      console.log ("pacman colliding")
+      pacmanCherry.splice(i, 1);
+      return i;
+    }
+  }
+  return -1;
+}
+
+
 
 
 
