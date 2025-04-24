@@ -4,10 +4,10 @@ import { BaseEntity } from "../server/entities";
 
 enum PowerType {
   SPEED = "speed",
-  TELEPORT = "teleport"
+  TELEPORT = "teleport",
 }
 
-class PowerObject extends BaseEntity{
+class PowerObject extends BaseEntity {
   type: PowerType;
 
   constructor(x: number, y: number, color: string, type: PowerType) {
@@ -45,20 +45,18 @@ export const speedObjects: PowerObject[] = [
 
 export const teleportObject: PowerObject[] = [
   new PowerObject(290, 710, "blue", PowerType.TELEPORT),
-  new PowerObject(290+32, 710, "blue", PowerType.TELEPORT),
+  new PowerObject(290 + 32, 710, "blue", PowerType.TELEPORT),
   new PowerObject(928, 1350, "blue", PowerType.TELEPORT),
-  new PowerObject(928+32, 1350, "blue", PowerType.TELEPORT),
+  new PowerObject(928 + 32, 1350, "blue", PowerType.TELEPORT),
 ];
 
 // This function returns the index of the object that the player is colliding with
-export function SpeedObjectCollision(
-  player: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  }
-): number | null {
+export function SpeedObjectCollision(player: {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}): number | null {
   for (let i = 0; i < speedObjects.length; i++) {
     if (speedObjects[i].checkPlayerCollision(player)) {
       speedObjects.splice(i, 1);
@@ -68,16 +66,12 @@ export function SpeedObjectCollision(
   return -1; // If nothing is hit, return null
 }
 
-
-
-export function teleportObjectObjectCollision(
-  player: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  }
-): number | null {
+export function teleportObjectObjectCollision(player: {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}): number | null {
   for (let i = 0; i < teleportObject.length; i++) {
     if (teleportObject[i].checkPlayerCollision(player)) {
       console.log(`Colliding with teleport object at index ${i}:`, i);

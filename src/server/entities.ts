@@ -1,8 +1,7 @@
-import { fgCtx, fgCanvas } from "../client/Canvas";
+import { fgCtx } from "../client/Canvas";
 import { Boundaries } from "../client/CollisionBlocks";
 
-type Direction = 'up' | 'down' | 'left' | 'right';
-
+type Direction = "up" | "down" | "left" | "right";
 
 interface Entity {
   x: number;
@@ -54,10 +53,22 @@ export class BaseEntity implements Entity {
     const characterTexture = new Image();
     characterTexture.src = "../game-assets/inky.png";
     if (characterTexture.complete) {
-      fgCtx.drawImage(characterTexture, this.x, this.y, this.width, this.height);
+      fgCtx.drawImage(
+        characterTexture,
+        this.x,
+        this.y,
+        this.width,
+        this.height,
+      );
     } else {
       characterTexture.onload = () => {
-        fgCtx.drawImage(characterTexture, this.x, this.y, this.width, this.height);
+        fgCtx.drawImage(
+          characterTexture,
+          this.x,
+          this.y,
+          this.width,
+          this.height,
+        );
       };
     }
   }
@@ -136,7 +147,5 @@ export class Pacman extends BaseEntity {
 export class powerUps extends BaseEntity {
   constructor(x: number, y: number, color: string, speed: number) {
     super(x, y, color, speed);
-
-    
   }
 }
