@@ -8,7 +8,7 @@ enum PowerType {
 }
 
 class PowerObject extends BaseEntity{
-  type: PowerType
+  type: PowerType;
 
   constructor(x: number, y: number, color: string, type: PowerType) {
     super(x, y, color, 0); // speed = 0, as power objects dont move
@@ -35,6 +35,7 @@ class PowerObject extends BaseEntity{
   }
 }
 
+// Create new power items on the map
 export const speedObjects: PowerObject[] = [
   new PowerObject(560, 620, "blue", PowerType.SPEED),
   new PowerObject(50, 1420, "blue", PowerType.SPEED),
@@ -42,15 +43,24 @@ export const speedObjects: PowerObject[] = [
   // new PowerObject(canvas.width/2, canvas.width/2-100, "blue"),
 ];
 
+export const teleportObject: PowerObject[] = [
+  new PowerObject(290, 710, "blue", PowerType.TELEPORT),
+  new PowerObject(290+32, 710, "blue", PowerType.TELEPORT),
+  new PowerObject(928, 1350, "blue", PowerType.TELEPORT),
+  new PowerObject(928+32, 1350, "blue", PowerType.TELEPORT),
+];
+
 // This function returns the index of the object that the player is colliding with
 export function SpeedObjectCollision(
-  playerX: number,
-  playerY: number,
-  playerWidth: number,
-  playerHeight: number
+  player: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }
 ): number | null {
   for (let i = 0; i < speedObjects.length; i++) {
-    if (speedObjects[i].isColliding(playerX, playerY, playerWidth, playerHeight)) {
+    if (speedObjects[i].checkPlayerCollision(player)) {
       speedObjects.splice(i, 1);
       return i;
     }
@@ -59,28 +69,20 @@ export function SpeedObjectCollision(
 }
 
 
-export const teleportObject: PowerObject[] = [
-  new PowerObject(290, 710, "blue"),
-  new PowerObject(290+32, 710, "blue"),
-  new PowerObject(928, 1350, "blue"),
-  new PowerObject(928+32, 1350, "blue"),
-];
+
 export function teleportObjectObjectCollision(
-  playerX: number,
-  playerY: number,
-  playerWidth: number,
-  playerHeight: number
+  player: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }
 ): number | null {
   for (let i = 0; i < teleportObject.length; i++) {
-    if (teleportObject[i].isColliding(playerX, playerY, playerWidth, playerHeight)) {
+    if (teleportObject[i].checkPlayerCollision(player)) {
       console.log(`Colliding with teleport object at index ${i}:`, i);
       return i;
     }
   }
   return -1;
 }
-
-
-
-
-

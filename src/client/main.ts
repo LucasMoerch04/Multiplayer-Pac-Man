@@ -113,22 +113,21 @@ function animate() {
   }
 
   speedObjects.forEach((speedObject) => {
-    speedObject.drawObject();
+    speedObject.draw();
   });
 }
 
 window.addEventListener("keydown", function (event) {
   if (!socket.id || !frontEndPlayers[socket.id]) return; // Check if socket.id is defined and the player exists in the frontEndPlayers object
-  //!!!!!Måske kunne man lave dette til en switch så det er mere tydeligt hvad der sker
   const player = frontEndPlayers[socket.id];
   //This is constantly checking if a player has collided with a object and if so it returns the index of the object
-  const collidingSpeed = SpeedObjectCollision(player.x, player.y, player.width, player.height);
+  const collidingSpeed = SpeedObjectCollision(player);
   if (collidingSpeed !== null && collidingSpeed >= 0) {
     console.log("Emitting Speed with value: true");
     socket.emit('speedBoost', true);
   }
   //Returns the index of the Teleporter Object the player is colliding with
-  const collidingTeleport = teleportObjectObjectCollision(player.x, player.y, player.width, player.height);
+  const collidingTeleport = teleportObjectObjectCollision(player);
   //Emits the index if the player is colliding with a teleporter
   if (collidingTeleport !== null && collidingTeleport >= 0){
     console.log(`Emitting teleport with value: ${collidingTeleport}:`,collidingTeleport);
