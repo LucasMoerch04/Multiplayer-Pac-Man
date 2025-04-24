@@ -1,49 +1,44 @@
 import { redbull } from "./Canvas";
 import { fgCtx } from "./Canvas";
+import { BaseEntity } from "../server/entities";
 
+enum PowerType {
+  SPEED = "speed",
+  TELEPORT = "teleport"
+}
 
-class PowerObject {
-  public leftBorder: number = 0;
-  public rightBorder: number = 0;
-  public topBorder: number = 0;
-  public bottomBorder: number = 0;
-  public width: number = 32;
-  public height: number = 32;
-  public x: number;
-  public y: number;
-  public color: string;
+class PowerObject extends BaseEntity{
+  type: PowerType
 
-  constructor(x: number, y: number, color: string) {
-    this.x = x;
-    this.y = y;
-    this.color = color;
+  constructor(x: number, y: number, color: string, type: PowerType) {
+    super(x, y, color, 0); // speed = 0, as power objects dont move
+    this.type = type;
   }
 
-  drawObject() {
+  draw() {
     // Ensure the image is loaded before drawing
     fgCtx.drawImage(redbull, this.x, this.y, this.width, this.height);
   }
 
-  // Collision detection method
-  isColliding(
-    playerX: number,
-    playerY: number,
-    playerWidth: number,
-    playerHeight: number
-  ): boolean {
+  checkPlayerCollision(player: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }): boolean {
     return (
-      playerX < this.x + this.width &&
-      playerX + playerWidth > this.x &&
-      playerY < this.y + this.height &&
-      playerY + playerHeight > this.y
+      player.x < this.x + this.width &&
+      player.x + player.width > this.x &&
+      player.y < this.y + this.height &&
+      player.y + player.height > this.y
     );
   }
 }
 
 export const speedObjects: PowerObject[] = [
-  new PowerObject(560, 620, "blue"),
-  new PowerObject(50, 1420, "blue"),
-  new PowerObject(1550, 370, "blue"),
+  new PowerObject(560, 620, "blue", PowerType.SPEED),
+  new PowerObject(50, 1420, "blue", PowerType.SPEED),
+  new PowerObject(1550, 370, "blue", PowerType.SPEED),
   // new PowerObject(canvas.width/2, canvas.width/2-100, "blue"),
 ];
 

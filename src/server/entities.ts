@@ -1,4 +1,8 @@
 import { fgCtx, fgCanvas } from "../client/Canvas";
+import { Boundaries } from "../client/CollisionBlocks";
+
+type Direction = 'up' | 'down' | 'left' | 'right';
+
 
 interface Entity {
   x: number;
@@ -10,10 +14,10 @@ interface Entity {
   updateBorders(): void;
   draw(): void;
   initialize(): void;
-  checkCollision(direction: string, boundaries: any[]): boolean;
+  checkCollision(direction: Direction, boundaries: Boundaries[]): boolean;
 }
 
-abstract class BaseEntity implements Entity {
+export class BaseEntity implements Entity {
   public x: number;
   public y: number;
   public width: number = 32;
@@ -58,7 +62,7 @@ abstract class BaseEntity implements Entity {
     }
   }
 
-  checkCollision(direction: string, boundaries: any[]): boolean {
+  checkCollision(direction: Direction, boundaries: Boundaries[]): boolean {
     for (const boundary of boundaries) {
       switch (direction) {
         case "right":
