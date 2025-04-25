@@ -1,7 +1,7 @@
-const canvas: HTMLCanvasElement = document.getElementById(
-  "gameState",
-) as HTMLCanvasElement;
-const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
+import { fgCtx } from "../client/Canvas";
+import { Boundaries } from "../client/CollisionBlocks";
+
+type Direction = "up" | "down" | "left" | "right";
 
 interface Entity {
   x: number;
@@ -13,10 +13,10 @@ interface Entity {
   updateBorders(): void;
   draw(): void;
   initialize(): void;
-  checkCollision(direction: string, boundaries: any[]): boolean;
+  checkCollision(direction: Direction, boundaries: Boundaries[]): boolean;
 }
 
-abstract class BaseEntity implements Entity {
+export class BaseEntity implements Entity {
   public x: number;
   public y: number;
   public width: number = 32;
@@ -44,8 +44,8 @@ abstract class BaseEntity implements Entity {
   }
 
   draw() {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    fgCtx.fillStyle = this.color;
+    fgCtx.fillRect(this.x, this.y, this.width, this.height);
     this.updateBorders();
   }
 
@@ -53,15 +53,27 @@ abstract class BaseEntity implements Entity {
     const characterTexture = new Image();
     characterTexture.src = "../game-assets/inky.png";
     if (characterTexture.complete) {
-      ctx.drawImage(characterTexture, this.x, this.y, this.width, this.height);
+      fgCtx.drawImage(
+        characterTexture,
+        this.x,
+        this.y,
+        this.width,
+        this.height,
+      );
     } else {
       characterTexture.onload = () => {
-        ctx.drawImage(characterTexture, this.x, this.y, this.width, this.height);
+        fgCtx.drawImage(
+          characterTexture,
+          this.x,
+          this.y,
+          this.width,
+          this.height,
+        );
       };
     }
   }
 
-  checkCollision(direction: string, boundaries: any[]): boolean {
+  checkCollision(direction: Direction, boundaries: Boundaries[]): boolean {
     for (const boundary of boundaries) {
       switch (direction) {
         case "right":
@@ -135,7 +147,5 @@ export class Pacman extends BaseEntity {
 export class powerUps extends BaseEntity {
   constructor(x: number, y: number, color: string, speed: number) {
     super(x, y, color, speed);
-
-    
   }
 }
