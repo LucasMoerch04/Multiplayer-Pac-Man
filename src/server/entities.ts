@@ -44,14 +44,34 @@ abstract class BaseEntity implements Entity {
   }
 
   draw() {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
     this.updateBorders();
   }
 
   initialize() {
     const characterTexture = new Image();
-    characterTexture.src = "../game-assets/inky.png";
+      switch (this.color) {
+        case "yellow":
+          characterTexture.src = "../game-assets/ghostYellow.png";
+          break;
+        case "blue":
+          characterTexture.src = "../game-assets/ghostBlue.png";
+          break;
+        case "aqua":
+          characterTexture.src = "../game-assets/ghostAqua.png";
+          break;
+        case "pink":
+          characterTexture.src = "../game-assets/ghostPink.png";
+          break;
+        case "white":
+          characterTexture.src = "../game-assets/ghostWhite.png";
+          break;
+        case "pacman":
+          characterTexture.src = "../game-assets/pacMan.png";
+          break;
+        default:
+          characterTexture.src = "../game-assets/ghostRed.png";
+          break;
+      }
     if (characterTexture.complete) {
       ctx.drawImage(characterTexture, this.x, this.y, this.width, this.height);
     } else {

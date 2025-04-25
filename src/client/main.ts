@@ -10,7 +10,7 @@ import { Pacman } from "../server/entities";
 import { boundaryArray } from "./CollisionBlocks";
 import {SpeedObjectCollision, speedObjects,
         teleportObject, teleportObjectObjectCollision} from "./Powers";
-import { Pacman } from "./pacman";
+
 
 
 const canvas: HTMLCanvasElement = document.getElementById(

@@ -28,9 +28,9 @@ export function setupWebSocket(io: Server) {
     console.log("A user connected", socket.id);
 
     backEndPlayers[socket.id] = {
-      x: 1664/2-10, // random x position
-      y: 1664/2-10, // random y position
-      color: "yellow", // Example color.
+      x: 1664/2-10,
+      y: 1664/2-10,
+      color: "pink", // Example color.
       speed: 5, // Example speed.
     };
 
@@ -59,7 +59,7 @@ export function setupWebSocket(io: Server) {
     pacMan[0] = {
       x: 70,
       y: 70,
-      color: "red",
+      color: "pacman",
       speed: 6,
     };
 
