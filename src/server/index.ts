@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 
 // Create server instance
-const io = new Server(server);
+const io = new Server(server, { pingInterval: 2000, pingTimeout: 5000 });
 
 console.log("Starting server..."); // Log here should only appear once
 
