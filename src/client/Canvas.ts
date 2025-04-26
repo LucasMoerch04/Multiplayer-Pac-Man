@@ -23,3 +23,6 @@ console.log(redbull);
 redbull.onload = () => {
     console.log(redbull);
   };
+export function drawBackground(){
+  bgCtx.drawImage(backgroundImage, 0, 0, bgCanvas.width, bgCanvas.height);
+}

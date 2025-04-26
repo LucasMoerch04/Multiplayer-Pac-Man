@@ -108,15 +108,27 @@ export class BaseEntity implements Entity {
 }
 
 export class SPlayer extends BaseEntity {
-  constructor(x: number, y: number, color: string, speed: number) {
+  public camerabox: { x: number; y: number; width: number; height: number };
+
+  constructor(x: number, y: number, color: string, speed: number,
+              camerabox: { x: number; y: number, width: number, height: number}) {
     super(x, y, color, speed);
-  }
+    this.camerabox = {
+      x: this.x,
+      y: this.y,
+      width: 80,
+      height: 80,
+    };
+    }
+    
+  
 
   checkCollisionWithPacman(pacman: {
     x: number;
     y: number;
     width: number;
     height: number;
+  
   }): boolean {
     return (
       this.x < pacman.x + pacman.width &&
@@ -124,8 +136,10 @@ export class SPlayer extends BaseEntity {
       this.y < pacman.y + pacman.height &&
       this.y + this.height > pacman.y
     );
+  
   }
 }
+ 
 
 export class Pacman extends BaseEntity {
   constructor(x: number, y: number, color: string, speed: number) {
@@ -140,3 +154,16 @@ export class powerUps extends BaseEntity {
     
   }
 }
+export class cameraBox extends BaseEntity {
+  constructor(x: number, y: number) {
+    super(x, y, "rgba(0,0,255,0.2)", 0); // Initialize at (0, 0) with a transparent blue color
+    
+    this.width = 500; // Set width to 80
+    this.height = 320; // Set height to 80
+  }
+
+  
+}
+
+
+  
