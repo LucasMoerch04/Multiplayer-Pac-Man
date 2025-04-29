@@ -1,8 +1,5 @@
 import { Server, Socket } from "socket.io";
 
-// Initiate counter
-let countUsers: number = 0;
-
 /**
  * Sets up WebSocket event handling for the game
  * This function registers event listeners for new connections,
@@ -15,84 +12,41 @@ let countUsers: number = 0;
  * 'io' is for all users
  */
 export function setupWebSocket(io: Server) {
-  const backEndPlayers: {
-    [key: string]: { x: number; y: number; color: string; speed: number };
-  } = {};
-  const pacMan: {
-    [key: string]: { x: number; y: number; color: string; speed: number };
-  } = {};
+  let countUsers: number = 0;
 
+  // Track connected players
+  const backEndPlayers: Record<string, { x: number; y: number; color: string; speed: number }> = {};
+
+  // Single Pac-Man instance
+  let pacMan: { x: number; y: number; color: string; speed: number } | null = null;
+
+  // listen for client connections
   io.on("connection", (socket: Socket) => {
-    // listen for client connections
-    console.log("A user connected", socket.id);
+    const id = socket.id;
+    console.log("User connected:", id);
 
-    backEndPlayers[socket.id] = {
-      x: 1664 / 2 - 10, // random x position
-      y: 1664 / 2 - 10, // random y position
-      color: "yellow", // Example color.
-      speed: 5, // Example speed.
+    // Initialize player at center
+    backEndPlayers[id] = {
+      x: 1664 / 2 - 16,
+      y: 1664 / 2 - 16,
+      color: "yellow",
+      speed: 5,
     };
 
-    io.emit("updatePlayers", backEndPlayers); // emit the new player to all clients
+    // Ensure Pac-Man exists
+    if (!pacMan) {
+      pacMan = { x: 70, y: 70, color: "red", speed: 1 };
+    }
 
-    //console.log(backEndPlayers);
-
-    socket.on("newUser", () => {
-      // listen for newUser emits from a client
-      countUsers++;
-      //console.log(countUsers);
-      io.emit("updateCounter", { countUsers }); // broadcast the updated user count to all client
-    });
-
-    socket.on("disconnect", (reason) => {
-      // listen for client disconnection
-      countUsers--;
-      console.log(reason);
-      delete backEndPlayers[socket.id]; // remove the player from the players object
-
-      io.emit("updatePlayers", backEndPlayers); // emit the updated players to all clients
-
-      io.emit("updateCounter", { countUsers }); // broadcast again
-    });
-
-    pacMan[0] = {
-      x: 70,
-      y: 70,
-      color: "red",
-      speed: 6,
-    };
-
+    // Send initial state
+    io.emit("updatePlayers", backEndPlayers);
     io.emit("updatePacMan", pacMan);
 
-    socket.on("eatPacman", (playerId) => {
-      console.log("eatPacman", playerId);
-
-      // Reset position
-      pacMan[0].x = 1200 * Math.random();
-      pacMan[0].y = 1500 * Math.random();
-
-      io.emit("updatePacMan", pacMan);
-      io.emit("pacManStatus", pacMan);
+    // New user count
+    socket.on("newUser", () => {
+      countUsers++;
+      io.emit("updateCounter", { countUsers });
     });
-
-    setInterval(() => {
-      if (pacMan[0]) {
-        if (Math.random() > 0.5) {
-          pacMan[0].x += pacMan[0].speed;
-        } else {
-          pacMan[0].x -= pacMan[0].speed;
-        }
-
-        if (Math.random() > 0.5) {
-          pacMan[0].y += pacMan[0].speed;
-        } else {
-          pacMan[0].y -= pacMan[0].speed;
-        }
-
-        // Emit til alle spillere
-        io.emit("updatePacMan", pacMan);
-      }
-    }, 1000);
 
     socket.on("keydown", (keycode) => {
       // listen for keydown events from the client
@@ -127,64 +81,68 @@ export function setupWebSocket(io: Server) {
           break;
       }
     });
-    //The speed boost event
-    socket.on("speedBoost", (booleanValue) => {
-      console.log("Received booleanEvent on server:", booleanValue);
 
-      // Set speed to 10 for all players excluding the player who triggered the event
-      for (const id in backEndPlayers) {
-        if (id !== socket.id) {
-          // Exclude the triggering player
-          backEndPlayers[id].speed = 10;
-        }
-      }
-      //The player who triggered the event has the speed lowered
-      backEndPlayers[socket.id].speed = 2;
-      io.emit("updatePlayers", backEndPlayers); //updates players after triggering the event
-
-      // Reset speed to 5 for all players after 10 seconds
-      setTimeout(() => {
-        for (const id in backEndPlayers) {
-          backEndPlayers[id].speed = 5;
-        }
-        io.emit("updatePlayers", backEndPlayers); //Lowering the velocity after the event is over
-      }, 10000); // 10 seconds
+    // Pac-Man position from client AI
+    socket.on("pacmanMove", (pos: { x: number; y: number }) => {
+      if (!pacMan) return;
+      pacMan.x = pos.x;
+      pacMan.y = pos.y;
+      io.emit("updatePacMan", pacMan);
     });
-    //Teleporter event
-    socket.on("Teleport", (number) => {
-      switch (number) {
-        //if the player collides with either of the left teleporter blocks their coordinats is set to the right teleporter
-        case 0:
-        case 1:
-          backEndPlayers[socket.id].x = 928 - 32;
-          backEndPlayers[socket.id].y = 1350 + 32;
-          io.emit("updatePlayers", backEndPlayers);
+
+    // when pacman eaten, reset Pac-Man and broadcast status
+    socket.on("eatPacman", (playerId: string) => {
+      if (!pacMan) return;
+      console.log("Pac-Man eaten by", playerId);
+      // Random respawn
+      pacMan.x = 1200 * Math.random();
+      pacMan.y = 1500 * Math.random();
+      io.emit("updatePacMan", pacMan);
+      io.emit("pacManEaten", playerId);
+    });
+
+    // Speed boost relay
+    socket.on("speedBoost", (flag: boolean) => {
+      for (const pid in backEndPlayers) {
+        backEndPlayers[pid].speed = pid === id ? 2 : 10;
+      }
+      console.log("Speed boost activated by", id);
+      io.emit("updatePlayers", backEndPlayers);
+      setTimeout(() => {
+        for (const pid in backEndPlayers) backEndPlayers[pid].speed = 5;
+        io.emit("updatePlayers", backEndPlayers);
+      }, 10000);
+    });
+
+    // Teleport relay
+    socket.on("Teleport", (teleIndex: number) => {
+      const p = backEndPlayers[id];
+      if (!p) return;
+      switch (teleIndex) {
+        case 0: case 1:
+          p.x = 928 - 32;
+          p.y = 1350 + 32;
           break;
-        //if the player collides with either of the right teleporter blocks their coordinats is set to the left teleporter
-        case 2:
-        case 3:
-          backEndPlayers[socket.id].x = 290 - 32;
-          backEndPlayers[socket.id].y = 710 + 32;
-          io.emit("updatePlayers", backEndPlayers);
+        case 2: case 3:
+          p.x = 290 - 32;
+          p.y = 710 + 32;
           break;
       }
-
-      // This is a penalty for taking the teleport
-      backEndPlayers[socket.id].speed = 2;
-      io.emit("updatePlayers", backEndPlayers); //updates players after triggering the event
-
-      // Reset speed to 5 for all players after 10 seconds
+      p.speed = 2;
+      io.emit("updatePlayers", backEndPlayers);
       setTimeout(() => {
-        backEndPlayers[socket.id].speed = 5;
-
-        //updating so the players speed is returned to 5
+        p.speed = 5;
         io.emit("updatePlayers", backEndPlayers);
-      }, 10000); // 10 seconds
+      }, 10000);
+    });
+
+    // Disconnect
+    socket.on("disconnect", (reason) => {
+      delete backEndPlayers[id];
+      countUsers--;
+      io.emit("updatePlayers", backEndPlayers);
+      io.emit("updateCounter", { countUsers });
+      console.log("User disconnected:", id, "reason: ", reason);
     });
   });
-  /*
-  setInterval(() => {
-    io.emit('updatePlayers', backEndPlayers);
-  }, 15);
-*/
 }

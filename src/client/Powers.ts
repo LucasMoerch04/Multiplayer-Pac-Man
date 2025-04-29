@@ -1,6 +1,6 @@
-import { redbull } from "./Canvas";
+import { redbullImage } from "./Canvas";
 import { fgCtx } from "./Canvas";
-import { BaseEntity } from "../server/entities";
+import { BaseEntity } from "../shared/entities";
 
 enum PowerType {
   SPEED = "speed",
@@ -17,7 +17,7 @@ class PowerObject extends BaseEntity {
 
   draw() {
     // Ensure the image is loaded before drawing
-    fgCtx.drawImage(redbull, this.x, this.y, this.width, this.height);
+    fgCtx.drawImage(redbullImage, this.x, this.y, this.width, this.height);
   }
 
   checkPlayerCollision(player: {
@@ -56,14 +56,14 @@ export function SpeedObjectCollision(player: {
   y: number;
   width: number;
   height: number;
-}): number | null {
+}): number {
   for (let i = 0; i < speedObjects.length; i++) {
     if (speedObjects[i].checkPlayerCollision(player)) {
       speedObjects.splice(i, 1);
       return i;
     }
   }
-  return -1; // If nothing is hit, return null
+  return -1; // If nothing is hit, return -1
 }
 
 export function teleportObjectObjectCollision(player: {
@@ -71,7 +71,7 @@ export function teleportObjectObjectCollision(player: {
   y: number;
   width: number;
   height: number;
-}): number | null {
+}): number {
   for (let i = 0; i < teleportObject.length; i++) {
     if (teleportObject[i].checkPlayerCollision(player)) {
       console.log(`Colliding with teleport object at index ${i}:`, i);
