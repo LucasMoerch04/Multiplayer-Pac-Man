@@ -8,12 +8,16 @@ import "./style.css";
 import { SPlayer } from "../server/entities";
 import { Pacman } from "../server/entities";
 import { boundaryArray } from "./CollisionBlocks";
-import {
-  SpeedObjectCollision,
-  speedObjects,
-  teleportObjectObjectCollision,
-} from "./Powers";
-import { fgCtx, fgCanvas } from "./Canvas";
+import {SpeedObjectCollision, speedObjects,
+        teleportObject, teleportObjectObjectCollision} from "./Powers";
+import { fgCtx } from "../client/Canvas";
+import { fgCanvas } from "../client/Canvas";
+
+
+
+const canvas: HTMLCanvasElement = document.getElementById(
+  "gameState",) as HTMLCanvasElement;
+const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
 export const socket = io(); // Connects to the server
 
@@ -82,19 +86,40 @@ socket.on("updatePlayers", (backendPlayers) => {
         backendPlayer.y,
         backendPlayer.color,
         backendPlayer.speed,
+        
       ); // Create a new player instance if it doesn't exist
     } else {
-      frontEndPlayers[id].x = backendPlayer.x;
-      frontEndPlayers[id].y = backendPlayer.y;
-      frontEndPlayers[id].color = backendPlayer.color;
-      frontEndPlayers[id].speed = backendPlayer.speed;
-    }
+      if(id === socket.id) {
+        // Update existing player instance
+        frontEndPlayers[id].x = backendPlayer.x;
+        frontEndPlayers[id].y = backendPlayer.y;
+        frontEndPlayers[id].color = backendPlayer.color;
+        frontEndPlayers[id].speed = backendPlayer.speed;
+        
+        const lastBackendInputIndex = playerInputs.findIndex(input => {
+          return backendPlayer.sequenceNumber === input.sequenceNumber;
+        })
 
-    for (const id in frontEndPlayers) {
-      if (!backendPlayers[id]) {
-        delete frontEndPlayers[id];
+        if (lastBackendInputIndex > -1) {
+        playerInputs.splice(0, lastBackendInputIndex + 1); // Remove all inputs up to the last backend input
+
+        playerInputs.forEach((input) => {
+          frontEndPlayers[id].x += input.dx; // Update player position based on inputs
+          frontEndPlayers[id].y += input.dy; // Update player position based on inputs
+        
+        });
+        } else {
+          // For all other players
+          frontEndPlayers[id].x = backendPlayer.x; // Reset player position to backend position
+          frontEndPlayers[id].y = backendPlayer.y; // Reset player position to backend position
+        }
       }
     }
+      for (const id in frontEndPlayers) {
+        if (!backendPlayers[id]) {
+          delete frontEndPlayers[id];
+        }
+      }
   }
 
   animate(); // Call the animate function to draw the players on the canvas
@@ -119,6 +144,63 @@ function animate() {
   });
 }
 
+const keys = {
+  w: {
+    pressed: false,
+  },
+  a: {
+    pressed: false,
+  },
+  s: {
+    pressed: false,
+  },
+  d: {
+    pressed: false,
+  }
+};
+
+const playerInputs: { sequenceNumber: number; dx: number; dy: number }[] = [];
+let sequenceNumber = 0;
+let currentDirection: "up" | "down" | "left" | "right" | null = null;
+
+
+setInterval(() => {
+  if (!socket.id || !frontEndPlayers[socket.id] || currentDirection === null) return;
+
+  const player = frontEndPlayers[socket.id];
+  let dx = 0, dy = 0;
+  switch (currentDirection) {
+    case "up":
+      if (!player.checkCollision("up", boundaryArray)) dy = -player.speed;
+      break;
+    case "down":
+      if (!player.checkCollision("down", boundaryArray)) dy = player.speed;
+      break;
+    case "left":
+      if (!player.checkCollision("left", boundaryArray)) dx = -player.speed;
+      break;
+    case "right":
+      if (!player.checkCollision("right", boundaryArray)) dx = player.speed;
+      break;
+    
+  }
+
+  if (dx !== 0 || dy !== 0) {
+    sequenceNumber++;
+    playerInputs.push({ sequenceNumber, dx, dy });
+    player.x += dx;
+    player.y += dy;
+
+    socket.emit("keydown", { keycode: "key" + currentDirection.charAt(0).toUpperCase(), sequenceNumber });
+
+    if (player.checkCollisionWithPacman(frontEndPacMan[0])) {
+      socket.emit("eatPacman", socket.id);
+    }
+
+    animate();
+  }
+}, 1000 / 30); // 30 FPS
+
 window.addEventListener("keydown", function (event) {
   if (!socket.id || !frontEndPlayers[socket.id]) return; // Check if socket.id is defined and the player exists in the frontEndPlayers object
   const player = frontEndPlayers[socket.id];
@@ -142,67 +224,24 @@ window.addEventListener("keydown", function (event) {
   switch (event.key) {
     case "w":
     case "ArrowUp":
-      if (frontEndPlayers[socket.id].checkCollision("up", boundaryArray)) {
-        return;
-      } else {
-        frontEndPlayers[socket.id].y -= frontEndPlayers[socket.id].speed; // Move the player up by 5 pixels
-        socket.emit("keydown", "keyU"); // Emit the keydown event to the server with the direction and socket id
-        if (
-          frontEndPlayers[socket.id].checkCollisionWithPacman(frontEndPacMan[0])
-        ) {
-          socket.emit("eatPacman", socket.id);
-        }
-        animate();
-      }
+      currentDirection = "up";
       break;
-
     case "a":
     case "ArrowLeft":
-      if (frontEndPlayers[socket.id].checkCollision("left", boundaryArray)) {
-        return;
-      } else {
-        frontEndPlayers[socket.id].x -= frontEndPlayers[socket.id].speed; // Move the player left by 5 pixels
-        socket.emit("keydown", "keyL"); // Emit the keydown event to the server with the direction and socket id
-        if (
-          frontEndPlayers[socket.id].checkCollisionWithPacman(frontEndPacMan[0])
-        ) {
-          socket.emit("eatPacman", socket.id);
-        }
-        animate();
-      }
+      currentDirection = "left";
       break;
-
     case "s":
     case "ArrowDown":
-      if (frontEndPlayers[socket.id].checkCollision("down", boundaryArray)) {
-        return;
-      } else {
-        frontEndPlayers[socket.id].y += frontEndPlayers[socket.id].speed; // Move the player down by 5 pixels
-        socket.emit("keydown", "keyD"); // Emit the keydown event to the server with the direction and socket id
-        if (
-          frontEndPlayers[socket.id].checkCollisionWithPacman(frontEndPacMan[0])
-        ) {
-          socket.emit("eatPacman", socket.id);
-        }
-        animate();
-      }
+      currentDirection = "down";
       break;
-
     case "d":
     case "ArrowRight":
-      if (frontEndPlayers[socket.id].checkCollision("right", boundaryArray)) {
-        return;
-      } else {
-        frontEndPlayers[socket.id].x += frontEndPlayers[socket.id].speed; // Move the player right by 5 pixels
-        socket.emit("keydown", "keyR"); // Emit the keydown event to the server with the direction and socket id
-        if (
-          frontEndPlayers[socket.id].checkCollisionWithPacman(frontEndPacMan[0])
-        ) {
-          socket.emit("eatPacman", socket.id);
-        }
-        animate();
-      }
+      currentDirection = "right";
       break;
+    case "0":
+        currentDirection = null;
+        break;
+      
   }
 });
-//const player = new SPlayer(70,70, "red"); // Create a new player instance with x, y and color
+

@@ -16,7 +16,7 @@ let countUsers: number = 0;
  */
 export function setupWebSocket(io: Server) {
   const backEndPlayers: {
-    [key: string]: { x: number; y: number; color: string; speed: number };
+    [key: string]: { x: number; y: number; color: string; speed: number; sequenceNumber: number };
   } = {};
   const pacMan: {
     [key: string]: { x: number; y: number; color: string; speed: number };
@@ -27,10 +27,11 @@ export function setupWebSocket(io: Server) {
     console.log("A user connected", socket.id);
 
     backEndPlayers[socket.id] = {
-      x: 1664 / 2 - 10, // random x position
-      y: 1664 / 2 - 10, // random y position
-      color: "yellow", // Example color.
-      speed: 5, // Example speed.
+      x: 1664/2-10, 
+      y: 1664/2-10, 
+      color: "yellow", 
+      speed: 5, 
+      sequenceNumber: 0, 
     };
 
     io.emit("updatePlayers", backEndPlayers); // emit the new player to all clients
@@ -58,7 +59,7 @@ export function setupWebSocket(io: Server) {
     pacMan[0] = {
       x: 70,
       y: 70,
-      color: "red",
+      color: "pacman",
       speed: 6,
     };
 
@@ -94,39 +95,34 @@ export function setupWebSocket(io: Server) {
       }
     }, 1000);
 
-    socket.on("keydown", (keycode) => {
+    socket.on("keydown", ({keycode, sequenceNumber}) => {
+      backEndPlayers[socket.id].sequenceNumber = sequenceNumber; // update the sequence number for the player
       // listen for keydown events from the client
       switch (keycode) {
         case "keyU":
           backEndPlayers[socket.id].y -= backEndPlayers[socket.id].speed; // move player up
-          //console.log(backEndPlayers.y);
           io.emit("updatePlayers", backEndPlayers); // emit the updated players to all
-          //io.emit('updatePacMan', pacMan);  // emit the powerUps to all clients
-
           break;
 
         case "keyL":
           backEndPlayers[socket.id].x -= backEndPlayers[socket.id].speed; // move player left
           io.emit("updatePlayers", backEndPlayers); // emit the updated players to all clients
-          //io.emit('updatePacMan', pacMan);  // emit the powerUps to all clients
-
           break;
 
         case "keyD":
           backEndPlayers[socket.id].y += backEndPlayers[socket.id].speed; // move player down
           io.emit("updatePlayers", backEndPlayers); // emit the updated players to all clients
-          //io.emit('updatePacMan', pacMan);  // emit the powerUps to all clients
-
           break;
 
         case "keyR":
           backEndPlayers[socket.id].x += backEndPlayers[socket.id].speed; // move player right
           io.emit("updatePlayers", backEndPlayers); // emit the updated players to all clients
-          //io.emit('updatePacMan', pacMan);  // emit the powerUps to all clients
-
           break;
       }
     });
+
+
+
     //The speed boost event
     socket.on("speedBoost", (booleanValue) => {
       console.log("Received booleanEvent on server:", booleanValue);
