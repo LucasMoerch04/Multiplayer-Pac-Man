@@ -1,105 +1,84 @@
 import { Server, Socket } from "socket.io";
 
 /**
- * Sets up WebSocket event handling for the game
- * This function registers event listeners for new connections,
- * disconnections, and other user-related events
- *
- * @param io - The Socket.IO server instance
- */
-/**
- * 'socket' is for specific user
- * 'io' is for all users
+ * Sets up WebSocket event handling for the game.
+ * Acts as a relay - clients drive both player movement and Pac-Man AI.
  */
 export function setupWebSocket(io: Server) {
-  let countUsers: number = 0;
+  let countUsers = 0;
 
   // Track connected players
   const backEndPlayers: Record<
     string,
-    { x: number; y: number; color: string; speed: number }
+    { x: number; y: number; color: string; speed: number; sequenceNumber: number }
   > = {};
 
   // Single Pac-Man instance
-  let pacMan: { x: number; y: number; color: string; speed: number } | null =
-    null;
+  let pacMan: { x: number; y: number; color: string; speed: number } = {
+    x: 816,
+    y: 816,
+    color: "red",
+    speed: 6,
+  };
 
-  // listen for client connections
   io.on("connection", (socket: Socket) => {
     const id = socket.id;
     console.log("User connected:", id);
 
-    // Initialize player at center
+    // Initialize new player at center
     backEndPlayers[id] = {
-      x: 70,
-      y: 70,
+      x: 1664 / 2 - 10,
+      y: 1664 / 2 - 10,
       color: "yellow",
       speed: 5,
+      sequenceNumber: 0,
     };
-
-    // Ensure Pac-Man exists
-    if (!pacMan) {
-      pacMan = { x: 70, y: 70, color: "red", speed: 1 };
-      console.log("test");
-    }
-
-    // Send initial state
     io.emit("updatePlayers", backEndPlayers);
     io.emit("updatePacMan", pacMan);
 
-    // New user count
+    // New user announces themselves
     socket.on("newUser", () => {
       countUsers++;
       io.emit("updateCounter", { countUsers });
     });
 
-    socket.on("keydown", (keycode) => {
-      // listen for keydown events from the client
-      switch (keycode) {
-        case "keyU":
-          backEndPlayers[socket.id].y -= backEndPlayers[socket.id].speed; // move player up
-          //console.log(backEndPlayers.y);
-          io.emit("updatePlayers", backEndPlayers); // emit the updated players to all
-          //io.emit('updatePacMan', pacMan);  // emit the powerUps to all clients
-
-          break;
-
-        case "keyL":
-          backEndPlayers[socket.id].x -= backEndPlayers[socket.id].speed; // move player left
-          io.emit("updatePlayers", backEndPlayers); // emit the updated players to all clients
-          //io.emit('updatePacMan', pacMan);  // emit the powerUps to all clients
-
-          break;
-
-        case "keyD":
-          backEndPlayers[socket.id].y += backEndPlayers[socket.id].speed; // move player down
-          io.emit("updatePlayers", backEndPlayers); // emit the updated players to all clients
-          //io.emit('updatePacMan', pacMan);  // emit the powerUps to all clients
-
-          break;
-
-        case "keyR":
-          backEndPlayers[socket.id].x += backEndPlayers[socket.id].speed; // move player right
-          io.emit("updatePlayers", backEndPlayers); // emit the updated players to all clients
-          //io.emit('updatePacMan', pacMan);  // emit the powerUps to all clients
-
-          break;
+    // Client-driven player movement
+    socket.on(
+      "keydown",
+      (data: { keycode: string; sequenceNumber: number }) => {
+        const p = backEndPlayers[id];
+        if (!p) return;
+        // update their sequenceNumber
+        p.sequenceNumber = data.sequenceNumber;
+        switch (data.keycode) {
+          case "keyU":
+            p.y -= p.speed;
+            break;
+          case "keyD":
+            p.y += p.speed;
+            break;
+          case "keyL":
+            p.x -= p.speed;
+            break;
+          case "keyR":
+            p.x += p.speed;
+            break;
+        }
+        io.emit("updatePlayers", backEndPlayers);
       }
-    });
+    );
 
-    // Pac-Man position from client AI
+    // Pac-Man AI driven by one client
     socket.on("pacmanMove", (pos: { x: number; y: number }) => {
-      if (!pacMan) return;
       pacMan.x = pos.x;
       pacMan.y = pos.y;
       io.emit("updatePacMan", pacMan);
     });
 
-    // when pacman eaten, reset Pac-Man and broadcast status
+    // Pac-Man eaten event
     socket.on("eatPacman", (playerId: string) => {
-      if (!pacMan) return;
       console.log("Pac-Man eaten by", playerId);
-      // Random respawn
+      // respawn in center
       pacMan.x = 816;
       pacMan.y = 816;
       io.emit("updatePacMan", pacMan);
@@ -111,19 +90,18 @@ export function setupWebSocket(io: Server) {
       for (const pid in backEndPlayers) {
         backEndPlayers[pid].speed = pid === id ? 2 : 10;
       }
-      console.log("Speed boost activated by", id);
       io.emit("updatePlayers", backEndPlayers);
       setTimeout(() => {
         for (const pid in backEndPlayers) backEndPlayers[pid].speed = 5;
         io.emit("updatePlayers", backEndPlayers);
-      }, 10000);
+      }, 10_000);
     });
 
     // Teleport relay
-    socket.on("Teleport", (teleIndex: number) => {
+    socket.on("Teleport", (index: number) => {
       const p = backEndPlayers[id];
       if (!p) return;
-      switch (teleIndex) {
+      switch (index) {
         case 0:
         case 1:
           p.x = 928 - 32;
@@ -143,13 +121,13 @@ export function setupWebSocket(io: Server) {
       }, 10000);
     });
 
-    // Disconnect
+    // Handle disconnect
     socket.on("disconnect", (reason) => {
+      console.log("User disconnected:", id, "reason:", reason);
       delete backEndPlayers[id];
       countUsers--;
       io.emit("updatePlayers", backEndPlayers);
       io.emit("updateCounter", { countUsers });
-      console.log("User disconnected:", id, "reason: ", reason);
     });
   });
 }

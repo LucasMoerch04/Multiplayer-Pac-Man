@@ -25,3 +25,7 @@ redbullImage.src = "../game-assets/Redbull.png";
 redbullImage.onload = () => {
   console.log(redbullImage);
 };
+
+export function drawBackground(){
+  bgCtx.drawImage(backgroundImage, 0, 0, bgCanvas.width, bgCanvas.height);
+}
