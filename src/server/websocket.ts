@@ -15,10 +15,14 @@ export function setupWebSocket(io: Server) {
   let countUsers: number = 0;
 
   // Track connected players
-  const backEndPlayers: Record<string, { x: number; y: number; color: string; speed: number }> = {};
+  const backEndPlayers: Record<
+    string,
+    { x: number; y: number; color: string; speed: number }
+  > = {};
 
   // Single Pac-Man instance
-  let pacMan: { x: number; y: number; color: string; speed: number } | null = null;
+  let pacMan: { x: number; y: number; color: string; speed: number } | null =
+    null;
 
   // listen for client connections
   io.on("connection", (socket: Socket) => {
@@ -27,8 +31,8 @@ export function setupWebSocket(io: Server) {
 
     // Initialize player at center
     backEndPlayers[id] = {
-      x: 1664 / 2 - 16,
-      y: 1664 / 2 - 16,
+      x: 70,
+      y: 70,
       color: "yellow",
       speed: 5,
     };
@@ -36,6 +40,7 @@ export function setupWebSocket(io: Server) {
     // Ensure Pac-Man exists
     if (!pacMan) {
       pacMan = { x: 70, y: 70, color: "red", speed: 1 };
+      console.log("test");
     }
 
     // Send initial state
@@ -95,8 +100,8 @@ export function setupWebSocket(io: Server) {
       if (!pacMan) return;
       console.log("Pac-Man eaten by", playerId);
       // Random respawn
-      pacMan.x = 1200 * Math.random();
-      pacMan.y = 1500 * Math.random();
+      pacMan.x = 816;
+      pacMan.y = 816;
       io.emit("updatePacMan", pacMan);
       io.emit("pacManEaten", playerId);
     });
@@ -119,11 +124,13 @@ export function setupWebSocket(io: Server) {
       const p = backEndPlayers[id];
       if (!p) return;
       switch (teleIndex) {
-        case 0: case 1:
+        case 0:
+        case 1:
           p.x = 928 - 32;
           p.y = 1350 + 32;
           break;
-        case 2: case 3:
+        case 2:
+        case 3:
           p.x = 290 - 32;
           p.y = 710 + 32;
           break;

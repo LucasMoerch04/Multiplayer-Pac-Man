@@ -16,18 +16,18 @@ export function buildClientGrid(): WalkableGrid {
 
   for (const b of boundaryArray as Boundaries[]) {
     const startC = Math.floor(b.x / CELL_SIZE);
-    const endC   = Math.floor((b.x + b.width)  / CELL_SIZE);
+    const endC = Math.floor((b.x + b.width) / CELL_SIZE);
     const startR = Math.floor(b.y / CELL_SIZE);
-    const endR   = Math.floor((b.y + b.height) / CELL_SIZE);
+    const endR = Math.floor((b.y + b.height) / CELL_SIZE);
     for (let r = startR; r < endR; r++) {
       for (let c = startC; c < endC; c++) {
         grid[r][c] = false;
       }
     }
   }
+  console.log("grid size:", rows, "x", cols);
 
   return grid;
 }
 
-// Re-export shared helpers
 export { toCell, toPixel, aStar, CELL_SIZE };
