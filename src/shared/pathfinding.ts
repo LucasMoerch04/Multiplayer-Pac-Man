@@ -38,21 +38,21 @@ export function getInnerCorners(grid: RectGrid): Cell[] {
   const rows = grid.length;
   const cols = grid[0].length;
   return [
-    { row: 1,       col: 1       },
-    { row: 1,       col: cols-2  },
-    { row: rows-2,  col: 1       },
-    { row: rows-2,  col: cols-2  },
+    { row: 1, col: 1 },
+    { row: 1, col: cols - 2 },
+    { row: rows - 2, col: 1 },
+    { row: rows - 2, col: cols - 2 },
   ];
 }
 
-// A* pathfinding implementation 
+// A* pathfinding implementation
 
 interface Node {
   row: number;
   col: number;
-  g: number;           // cost from start
-  f: number;           // g + heuristic
-  parent?: Node;       // previous node in path
+  g: number; // cost from start
+  f: number; // g + heuristic
+  parent?: Node; // previous node in path
 }
 
 /**
@@ -69,7 +69,7 @@ function heuristic(a: Node, b: Node): number {
 export function aStar(
   grid: RectGrid,
   startCell: Cell,
-  goalCell: Cell
+  goalCell: Cell,
 ): Cell[] | null {
   const rows = grid.length;
   const cols = grid[0].length;
@@ -81,7 +81,10 @@ export function aStar(
     row: startCell.row,
     col: startCell.col,
     g: 0,
-    f: heuristic({ row: startCell.row, col: startCell.col, g: 0, f: 0 }, { row: goalCell.row, col: goalCell.col, g: 0, f: 0 }),
+    f: heuristic(
+      { row: startCell.row, col: startCell.col, g: 0, f: 0 },
+      { row: goalCell.row, col: goalCell.col, g: 0, f: 0 },
+    ),
   });
 
   while (openSet.length > 0) {
@@ -105,9 +108,9 @@ export function aStar(
     // Explore four neighbors
     for (const { dr, dc } of [
       { dr: -1, dc: 0 },
-      { dr: 1,  dc: 0 },
-      { dr: 0,  dc: -1},
-      { dr: 0,  dc: 1 },
+      { dr: 1, dc: 0 },
+      { dr: 0, dc: -1 },
+      { dr: 0, dc: 1 },
     ]) {
       const nr = current.row + dr;
       const nc = current.col + dc;
@@ -115,17 +118,23 @@ export function aStar(
 
       // Skip out-of-bounds, non-walkable, or already closed
       if (
-        nr < 0 || nr >= rows ||
-        nc < 0 || nc >= cols ||
+        nr < 0 ||
+        nr >= rows ||
+        nc < 0 ||
+        nc >= cols ||
         !grid[nr][nc] ||
         closed.has(key)
-      ) continue;
+      )
+        continue;
 
       const gScore = current.g + 1;
-      const hScore = heuristic({ row: nr, col: nc, g: 0, f: 0 }, { row: goalCell.row, col: goalCell.col, g: 0, f: 0 });
+      const hScore = heuristic(
+        { row: nr, col: nc, g: 0, f: 0 },
+        { row: goalCell.row, col: goalCell.col, g: 0, f: 0 },
+      );
       const fScore = gScore + hScore;
 
-      const existing = openSet.find(n => n.row === nr && n.col === nc);
+      const existing = openSet.find((n) => n.row === nr && n.col === nc);
       if (existing) {
         // If this path to neighbor is better, update
         if (gScore < existing.g) {
@@ -135,7 +144,13 @@ export function aStar(
         }
       } else {
         // Otherwise add new neighbor
-        openSet.push({ row: nr, col: nc, g: gScore, f: fScore, parent: current });
+        openSet.push({
+          row: nr,
+          col: nc,
+          g: gScore,
+          f: fScore,
+          parent: current,
+        });
       }
     }
   }

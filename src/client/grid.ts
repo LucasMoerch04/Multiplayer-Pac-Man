@@ -1,5 +1,3 @@
-// src/client/grid.ts
-
 import { boundaryArray, Boundaries } from "./CollisionBlocks";
 import { toCell, toPixel, aStar, CELL_SIZE } from "../shared/pathfinding";
 import { canvasHeight, canvasWidth } from "./Canvas";
