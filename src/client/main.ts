@@ -37,14 +37,14 @@ const frontEndPacMan: Pacman[] = [];
 
 // Build collision grid & instantiate local Pac-Man + AI
 const walkableGrid = buildClientGrid();
-const localPac = new Pacman(816, 816, "red", 5);
+const localPac = new Pacman(816, 816, "pacman", 5);
 frontEndPacMan[0] = localPac;
 const pacmanAI = new PacmanAI(localPac, walkableGrid);
 
-// If server ever forces Pac-Man position, override AI
+// If server forces Pac-Man position, override AI
 socket.on("updatePacMan", (pos: { x: number; y: number }) => {
   if (!frontEndPacMan[0]) {
-    frontEndPacMan[0] = new Pacman(pos.x, pos.y, "red", 5);
+    frontEndPacMan[0] = new Pacman(pos.x, pos.y, "pacman", 5);
   } else {
     frontEndPacMan[0].x = pos.x;
     frontEndPacMan[0].y = pos.y;
@@ -81,7 +81,7 @@ socket.on(
   },
 );
 
-// Main loop: step AI, emit its move, redraw
+// Main AI loop: step AI, emit its move, redraw
 setInterval(() => {
   pacmanAI.tick(Object.values(frontEndPlayers));
   socket.emit("pacmanMove", { x: localPac.x, y: localPac.y });
@@ -94,84 +94,107 @@ window.addEventListener("pacmanEatenLocally", () => {
 });
 
 // Continuous player‐movement setup
-const keys: Record<string, boolean> = { w: false, a: false, s: false, d: false };
 window.addEventListener("keydown", (e) => {
-  if (["w","a","s","d","ArrowUp","ArrowLeft","ArrowDown","ArrowRight"].includes(e.key)) {
-    keys[e.key] = true;
-  }
-});
-window.addEventListener("keyup", (e) => {
-  if (["w","a","s","d","ArrowUp","ArrowLeft","ArrowDown","ArrowRight"].includes(e.key)) {
-    keys[e.key] = false;
+  switch (e.key) {
+    case "w":
+    case "ArrowUp":
+      currentDirection = "up";
+      break;
+    case "s":
+    case "ArrowDown":
+      currentDirection = "down";
+      break;
+    case "a":
+    case "ArrowLeft":
+      currentDirection = "left";
+      break;
+    case "d":
+    case "ArrowRight":
+      currentDirection = "right";
+      break;
+    case "0":
+      currentDirection = null;
+      break;
   }
 });
 
 let currentDirection: "up" | "down" | "left" | "right" | null = null;
-const playerInputs: { sequenceNumber: number; dx: number; dy: number }[] = [];
 let sequenceNumber = 0;
 
 setInterval(() => {
-  const socketID = socket.id;
-  if (!socketID) return;
-  const me = frontEndPlayers[socketID];
-  if (!me) return;
-
-  // Determine direction from keys
-  if (keys.w || keys.ArrowUp) currentDirection = "up";
-  else if (keys.s || keys.ArrowDown) currentDirection = "down";
-  else if (keys.a || keys.ArrowLeft) currentDirection = "left";
-  else if (keys.d || keys.ArrowRight) currentDirection = "right";
-  else currentDirection = null;
+  if (!socket.id) return;
+  const player = frontEndPlayers[socket.id];
+  if (!player) return;
 
   if (currentDirection) {
-    let dx = 0, dy = 0;
+    // compute dx, dy for exactly one step in that direction
+    let dx = 0,
+      dy = 0;
     switch (currentDirection) {
       case "up":
-        if (!me.checkCollision("up", boundaryArray)) dy = -me.speed;
+        dy = -player.speed;
         break;
       case "down":
-        if (!me.checkCollision("down", boundaryArray)) dy = me.speed;
+        dy = player.speed;
         break;
       case "left":
-        if (!me.checkCollision("left", boundaryArray)) dx = -me.speed;
+        dx = -player.speed;
         break;
       case "right":
-        if (!me.checkCollision("right", boundaryArray)) dx = me.speed;
+        dx = player.speed;
         break;
     }
 
-    if (dx !== 0 || dy !== 0) {
-      sequenceNumber++;
-      playerInputs.push({ sequenceNumber, dx, dy });
-      me.x += dx;
-      me.y += dy;
-      socket.emit("keydown", {
-        keycode: "key" + currentDirection.charAt(0).toUpperCase(),
-        sequenceNumber,
-      });
-
-      // local collision‐with‐PacMan check
-      const pac = frontEndPacMan[0];
-      if (pac && me.checkCollisionWithPacman(pac)) {
-        socket.emit("eatPacman", socket.id);
-      }
-
-      animate();
+    // if the next step collides, stop continuous movement
+    if (player.checkCollision(currentDirection, boundaryArray)) {
+      currentDirection = null;
+      return;
     }
-  }
-}, 1000 / 30);
 
-// Final render pass
+    if (player.checkCollisionWithPacman(frontEndPacMan[0])) {
+      socket.emit("eatPacman", socket.id);
+    }
+
+    //This is constantly checking if a player has collided with a object and if so it returns the index of the object
+    const collidingSpeedPlayerIndex = SpeedObjectCollision(player);
+    if (collidingSpeedPlayerIndex !== null && collidingSpeedPlayerIndex >= 0) {
+      socket.emit("speedBoost", true);
+    }
+
+    //Returns the index of the Teleporter Object the player is colliding with
+    const collidingTeleportPlayerIndex = teleportObjectObjectCollision(player);
+    //Emits the index if the player is colliding with a teleporter
+    if (
+      collidingTeleportPlayerIndex !== null &&
+      collidingTeleportPlayerIndex >= 0
+    ) {
+      socket.emit("Teleport", collidingTeleportPlayerIndex);
+    }
+
+    // otherwise move, emit, redraw
+    player.x += dx;
+    player.y += dy;
+    socket.emit("keydown", {
+      keycode: "key" + currentDirection[0].toUpperCase(),
+      sequenceNumber: ++sequenceNumber,
+    });
+    animate();
+  }
+}, 1000 / 60);
+
 export function animate() {
   fgCtx.clearRect(0, 0, fgCanvas.width, fgCanvas.height);
 
   // Draw Pac-Man
-  const pac = frontEndPacMan[0];
-  if (pac) pac.draw(fgCtx);
+  const pacman = frontEndPacMan[0];
+  if (pacman) {
+    pacman.draw();
+  }
 
   // Draw players
   for (const id in frontEndPlayers) {
-    frontEndPlayers[id].draw(fgCtx);
+    frontEndPlayers[id].draw();
+    frontEndPlayers[id].draw();
   }
 
   // Draw power-ups

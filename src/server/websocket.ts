@@ -10,14 +10,20 @@ export function setupWebSocket(io: Server) {
   // Track connected players
   const backEndPlayers: Record<
     string,
-    { x: number; y: number; color: string; speed: number; sequenceNumber: number }
+    {
+      x: number;
+      y: number;
+      color: string;
+      speed: number;
+      sequenceNumber: number;
+    }
   > = {};
 
   // Single Pac-Man instance
   let pacMan: { x: number; y: number; color: string; speed: number } = {
     x: 816,
     y: 816,
-    color: "red",
+    color: "pacman",
     speed: 6,
   };
 
@@ -65,7 +71,7 @@ export function setupWebSocket(io: Server) {
             break;
         }
         io.emit("updatePlayers", backEndPlayers);
-      }
+      },
     );
 
     // Pac-Man AI driven by one client

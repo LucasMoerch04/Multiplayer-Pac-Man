@@ -1,12 +1,10 @@
-interface Rect {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
+// src/shared/entities.ts
+import { fgCtx } from "../client/Canvas";
+import { Boundaries } from "../client/CollisionBlocks";
+
 type Direction = "up" | "down" | "left" | "right";
 
-export interface Entity {
+interface Entity {
   x: number;
   y: number;
   width: number;
@@ -15,9 +13,20 @@ export interface Entity {
   speed: number;
 
   updateBorders(): void;
-  draw(ctx: CanvasRenderingContext2D): void;
-  checkCollision(dir: Direction, boundaries: Rect[]): boolean;
+  draw(): void;
+  checkCollision(direction: Direction, boundaries: Boundaries[]): boolean;
 }
+
+// preload all textures into a map
+const textures: Record<string, HTMLImageElement> = {
+  yellow: Object.assign(new Image(), { src: "/game-assets/ghostYellow.png" }),
+  blue: Object.assign(new Image(), { src: "/game-assets/ghostBlue.png" }),
+  aqua: Object.assign(new Image(), { src: "/game-assets/ghostAqua.png" }),
+  pink: Object.assign(new Image(), { src: "/game-assets/ghostPink.png" }),
+  white: Object.assign(new Image(), { src: "/game-assets/ghostWhite.png" }),
+  pacman: Object.assign(new Image(), { src: "/game-assets/pacMan.png" }),
+  red: Object.assign(new Image(), { src: "/game-assets/ghostRed.png" }),
+};
 
 export class BaseEntity implements Entity {
   public left = 0;
@@ -30,8 +39,8 @@ export class BaseEntity implements Entity {
     public y: number,
     public color: string,
     public speed: number,
-    public width = 32,
-    public height = 32,
+    public width: number = 32,
+    public height: number = 32,
   ) {
     this.updateBorders();
   }
@@ -43,21 +52,46 @@ export class BaseEntity implements Entity {
     this.bottom = this.y + this.height;
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+  draw() {
+    // update our bounding box first
     this.updateBorders();
+
+    // pick the right texture (or fallback to a solid fill)
+    const img = textures[this.color];
+    if (img && img.complete) {
+      fgCtx.drawImage(img, this.x, this.y, this.width, this.height);
+    } else {
+      // fallback rectangle
+      fgCtx.fillStyle = this.color;
+      fgCtx.fillRect(this.x, this.y, this.width, this.height);
+    }
   }
 
-  checkCollision(dir: Direction, boundaries: Rect[]): boolean {
-    const dx = dir === "left" ? -this.speed : dir === "right" ? this.speed : 0;
-    const dy = dir === "up" ? -this.speed : dir === "down" ? this.speed : 0;
-    const next: Rect = {
+  checkCollision(dir: Direction, boundaries: Boundaries[]): boolean {
+    let dx = 0;
+    let dy = 0;
+    
+    if (dir === "left") {
+      dx = -this.speed;
+    } else if (dir === "right") {
+      dx = this.speed;
+    }
+    
+    if (dir === "up") {
+      dy = -this.speed;
+    } else if (dir === "down") {
+      dy = this.speed;
+    }
+    
+
+    // simulate next frame's box
+    const next = {
       x: this.x + dx,
       y: this.y + dy,
       width: this.width,
       height: this.height,
     };
+
     return boundaries.some(
       (b) =>
         next.x < b.x + b.width &&
@@ -69,8 +103,16 @@ export class BaseEntity implements Entity {
 }
 
 export class SPlayer extends BaseEntity {
-  // Only overrides collision-with-Pacman
-  checkCollisionWithPacman(p: Rect): boolean {
+  constructor(x: number, y: number, color: string, speed: number) {
+    super(x, y, color, speed);
+  }
+
+  checkCollisionWithPacman(p: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }) {
     return (
       this.x < p.x + p.width &&
       this.x + this.width > p.x &&
@@ -81,22 +123,13 @@ export class SPlayer extends BaseEntity {
 }
 
 export class Pacman extends BaseEntity {
-  private static texture = Object.assign(new Image(), {
-    src: "../game-assets/Pacman.png",
-  });
-
-  draw(ctx: CanvasRenderingContext2D) {
-    if (Pacman.texture.complete) {
-      ctx.drawImage(Pacman.texture, this.x, this.y, this.width, this.height);
-    } else {
-      super.draw(ctx);
-    }
+  constructor(x: number, y: number, color: "pacman", speed: number) {
+    super(x, y, color, speed);
   }
 }
 
 export class PowerUp extends BaseEntity {
-  draw(ctx: CanvasRenderingContext2D) {
-    // custom PowerUp rendering here
-    super.draw(ctx);
+  constructor(x: number, y: number, color: string, speed: number) {
+    super(x, y, color, speed);
   }
 }
