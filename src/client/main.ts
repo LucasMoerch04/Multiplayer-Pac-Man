@@ -1,247 +1,202 @@
 import { io } from "socket.io-client";
-//Man skal huske at skrive sin fil her hvis man skal bruge den
 import "./CollisionBlocks";
 import "./Collisionstext";
 import "./Powers";
 import "./Canvas";
 import "./style.css";
-import { SPlayer } from "../server/entities";
-import { Pacman } from "../server/entities";
+
+import { SPlayer, Pacman } from "../shared/entities";
 import { boundaryArray } from "./CollisionBlocks";
-import {SpeedObjectCollision, speedObjects,
-        teleportObject, teleportObjectObjectCollision} from "./Powers";
-import { fgCtx } from "../client/Canvas";
-import { fgCanvas } from "../client/Canvas";
+import { fgCtx, fgCanvas } from "./Canvas";
+import {
+  SpeedObjectCollision,
+  speedObjects,
+  teleportObjectObjectCollision,
+} from "./Powers";
 
+import { buildClientGrid } from "./grid";
+import { PacmanAI } from "./pacmanAI";
 
+export const socket = io();
 
-const canvas: HTMLCanvasElement = document.getElementById(
-  "gameState",) as HTMLCanvasElement;
-const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
-
-export const socket = io(); // Connects to the server
-
-// On connection to socket, prints socket id and emits newUser function
+// On connect, announce and register
 socket.on("connect", () => {
-  console.log("Connected to server with id:", socket);
+  console.log("Connected with id", socket.id);
   socket.emit("newUser");
 });
 
-// After receiving updateCounter call, print the data given as argument
+// Show connected count
 socket.on("updateCounter", (data) => {
-  console.log("Users connected:", data.countUsers);
-  (document.getElementById("userCounter") as HTMLElement).innerText =
-    "Users Connected: " + data.countUsers; // change the innertext of the htmlElement with id of "userCounter" to show user count
+  (document.getElementById("userCounter")! as HTMLElement).innerText =
+    `Users Connected: ${data.countUsers}`;
 });
 
-//const player = new SPlayer(70,70, "red"); // Create a new player instance with x, y and color
-
+// Store all remote players and Pac-Man
 const frontEndPlayers: { [key: string]: SPlayer } = {};
 const frontEndPacMan: Pacman[] = [];
 
-socket.on("updatePacMan", (backendPacMan) => {
+// Build collision grid & instantiate local Pac-Man + AI
+const walkableGrid = buildClientGrid();
+const localPac = new Pacman(816, 816, "pacman", 5);
+frontEndPacMan[0] = localPac;
+const pacmanAI = new PacmanAI(localPac, walkableGrid);
+
+// If server forces Pac-Man position, override AI
+socket.on("updatePacMan", (pos: { x: number; y: number }) => {
   if (!frontEndPacMan[0]) {
-    frontEndPacMan[0] = new Pacman(
-      backendPacMan[0].x,
-      backendPacMan[0].y,
-      backendPacMan[0].color,
-      backendPacMan[0].speed,
-    );
+    frontEndPacMan[0] = new Pacman(pos.x, pos.y, "pacman", 5);
   } else {
-    const currentPacMan = frontEndPacMan[0];
-    const updatedPacManX = backendPacMan[0].x;
-    const updatedPacManY = backendPacMan[0].y;
-
-    let direction: "up" | "down" | "left" | "right" | null = null;
-
-    if (updatedPacManY < currentPacMan.y) direction = "up";
-    else if (updatedPacManY > currentPacMan.y) direction = "down";
-    else if (updatedPacManX < currentPacMan.x) direction = "left";
-    else if (updatedPacManX > currentPacMan.x) direction = "right";
-
-    if (direction && !currentPacMan.checkCollision(direction, boundaryArray)) {
-      // Check for collision before updating position
-      currentPacMan.x = updatedPacManX;
-      currentPacMan.y = updatedPacManY;
-    }
+    frontEndPacMan[0].x = pos.x;
+    frontEndPacMan[0].y = pos.y;
   }
-
-  animate();
 });
 
-socket.on("pacManStatus", (backendPacMan) => {
-  console.log("Pacman eaten!");
-  frontEndPacMan[0].x = backendPacMan[0].x; // Update PacMan's position
-  frontEndPacMan[0].y = backendPacMan[0].y; // Update PacMan's position
-  animate(); // Opdater canvas med ny position
+// Log when Pac-Man is eaten globally
+socket.on("pacManEaten", (playerId: string) => {
+  console.log(`Server: Pac-Man eaten by ${playerId}`);
 });
 
-socket.on("updatePlayers", (backendPlayers) => {
-  for (const id in backendPlayers) {
-    const backendPlayer = backendPlayers[id];
-
-    if (!frontEndPlayers[id]) {
-      frontEndPlayers[id] = new SPlayer(
-        backendPlayer.x,
-        backendPlayer.y,
-        backendPlayer.color,
-        backendPlayer.speed,
-        
-      ); // Create a new player instance if it doesn't exist
-    } else {
-      if(id === socket.id) {
-        // Update existing player instance
-        frontEndPlayers[id].x = backendPlayer.x;
-        frontEndPlayers[id].y = backendPlayer.y;
-        frontEndPlayers[id].color = backendPlayer.color;
-        frontEndPlayers[id].speed = backendPlayer.speed;
-        
-        const lastBackendInputIndex = playerInputs.findIndex(input => {
-          return backendPlayer.sequenceNumber === input.sequenceNumber;
-        })
-
-        if (lastBackendInputIndex > -1) {
-        playerInputs.splice(0, lastBackendInputIndex + 1); // Remove all inputs up to the last backend input
-
-        playerInputs.forEach((input) => {
-          frontEndPlayers[id].x += input.dx; // Update player position based on inputs
-          frontEndPlayers[id].y += input.dy; // Update player position based on inputs
-        
-        });
-        } else {
-          // For all other players
-          frontEndPlayers[id].x = backendPlayer.x; // Reset player position to backend position
-          frontEndPlayers[id].y = backendPlayer.y; // Reset player position to backend position
-        }
+// Keep remote players up to date
+socket.on(
+  "updatePlayers",
+  (
+    backendPlayers: Record<
+      string,
+      { x: number; y: number; color: string; speed: number }
+    >,
+  ) => {
+    for (const id in backendPlayers) {
+      const p = backendPlayers[id];
+      if (!frontEndPlayers[id]) {
+        frontEndPlayers[id] = new SPlayer(p.x, p.y, p.color, p.speed);
+      } else {
+        frontEndPlayers[id].x = p.x;
+        frontEndPlayers[id].y = p.y;
+        frontEndPlayers[id].speed = p.speed;
       }
     }
-      for (const id in frontEndPlayers) {
-        if (!backendPlayers[id]) {
-          delete frontEndPlayers[id];
-        }
-      }
-  }
-
-  animate(); // Call the animate function to draw the players on the canvas
-});
-function animate() {
-  fgCtx.clearRect(0, 0, fgCanvas.width, fgCanvas.height);
-
-  // Tegn PacMan
-  if (frontEndPacMan[0]) {
-    frontEndPacMan[0].draw();
-    frontEndPacMan[0].initialize();
-  }
-
-  // Tegn spillere
-  for (const id in frontEndPlayers) {
-    frontEndPlayers[id].draw();
-    frontEndPlayers[id].initialize();
-  }
-
-  speedObjects.forEach((speedObject) => {
-    speedObject.draw();
-  });
-}
-
-const keys = {
-  w: {
-    pressed: false,
+    for (const id in frontEndPlayers) {
+      if (!(id in backendPlayers)) delete frontEndPlayers[id];
+    }
   },
-  a: {
-    pressed: false,
-  },
-  s: {
-    pressed: false,
-  },
-  d: {
-    pressed: false,
-  }
-};
+);
 
-const playerInputs: { sequenceNumber: number; dx: number; dy: number }[] = [];
-let sequenceNumber = 0;
-let currentDirection: "up" | "down" | "left" | "right" | null = null;
-
-
+// Main AI loop: step AI, emit its move, redraw
 setInterval(() => {
-  if (!socket.id || !frontEndPlayers[socket.id] || currentDirection === null) return;
+  pacmanAI.tick(Object.values(frontEndPlayers));
+  socket.emit("pacmanMove", { x: localPac.x, y: localPac.y });
+  animate();
+}, 1000 / 60);
 
-  const player = frontEndPlayers[socket.id];
-  let dx = 0, dy = 0;
-  switch (currentDirection) {
-    case "up":
-      if (!player.checkCollision("up", boundaryArray)) dy = -player.speed;
-      break;
-    case "down":
-      if (!player.checkCollision("down", boundaryArray)) dy = player.speed;
-      break;
-    case "left":
-      if (!player.checkCollision("left", boundaryArray)) dx = -player.speed;
-      break;
-    case "right":
-      if (!player.checkCollision("right", boundaryArray)) dx = player.speed;
-      break;
-    
-  }
+// Local Pac-Man eat detection
+window.addEventListener("pacmanEatenLocally", () => {
+  socket.emit("eatPacman", socket.id);
+});
 
-  if (dx !== 0 || dy !== 0) {
-    sequenceNumber++;
-    playerInputs.push({ sequenceNumber, dx, dy });
-    player.x += dx;
-    player.y += dy;
-
-    socket.emit("keydown", { keycode: "key" + currentDirection.charAt(0).toUpperCase(), sequenceNumber });
-
-    if (player.checkCollisionWithPacman(frontEndPacMan[0])) {
-      socket.emit("eatPacman", socket.id);
-    }
-
-    animate();
-  }
-}, 1000 / 30); // 30 FPS
-
-window.addEventListener("keydown", function (event) {
-  if (!socket.id || !frontEndPlayers[socket.id]) return; // Check if socket.id is defined and the player exists in the frontEndPlayers object
-  const player = frontEndPlayers[socket.id];
-  //This is constantly checking if a player has collided with a object and if so it returns the index of the object
-  const collidingSpeed = SpeedObjectCollision(player);
-  if (collidingSpeed !== null && collidingSpeed >= 0) {
-    console.log("Emitting Speed with value: true");
-    socket.emit("speedBoost", true);
-  }
-  //Returns the index of the Teleporter Object the player is colliding with
-  const collidingTeleport = teleportObjectObjectCollision(player);
-  //Emits the index if the player is colliding with a teleporter
-  if (collidingTeleport !== null && collidingTeleport >= 0) {
-    console.log(
-      `Emitting teleport with value: ${collidingTeleport}:`,
-      collidingTeleport,
-    );
-    socket.emit("Teleport", collidingTeleport);
-  }
-
-  switch (event.key) {
+// Continuous player‐movement setup
+window.addEventListener("keydown", (e) => {
+  switch (e.key) {
     case "w":
     case "ArrowUp":
       currentDirection = "up";
       break;
-    case "a":
-    case "ArrowLeft":
-      currentDirection = "left";
-      break;
     case "s":
     case "ArrowDown":
       currentDirection = "down";
+      break;
+    case "a":
+    case "ArrowLeft":
+      currentDirection = "left";
       break;
     case "d":
     case "ArrowRight":
       currentDirection = "right";
       break;
     case "0":
-        currentDirection = null;
-        break;
-      
+      currentDirection = null;
+      break;
   }
 });
 
+let currentDirection: "up" | "down" | "left" | "right" | null = null;
+let sequenceNumber = 0;
+
+setInterval(() => {
+  if (!socket.id) return;
+  const player = frontEndPlayers[socket.id];
+  if (!player) return;
+
+  if (currentDirection) {
+    // compute dx, dy for exactly one step in that direction
+    let dx = 0,
+      dy = 0;
+    switch (currentDirection) {
+      case "up":
+        dy = -player.speed;
+        break;
+      case "down":
+        dy = player.speed;
+        break;
+      case "left":
+        dx = -player.speed;
+        break;
+      case "right":
+        dx = player.speed;
+        break;
+    }
+
+    // if the next step collides, stop continuous movement
+    if (player.checkCollision(currentDirection, boundaryArray)) {
+      currentDirection = null;
+      return;
+    }
+
+    if (player.checkCollisionWithPacman(frontEndPacMan[0])) {
+      socket.emit("eatPacman", socket.id);
+    }
+
+    //This is constantly checking if a player has collided with a object and if so it returns the index of the object
+    const collidingSpeedPlayerIndex = SpeedObjectCollision(player);
+    if (collidingSpeedPlayerIndex !== null && collidingSpeedPlayerIndex >= 0) {
+      socket.emit("speedBoost", true);
+    }
+
+    //Returns the index of the Teleporter Object the player is colliding with
+    const collidingTeleportPlayerIndex = teleportObjectObjectCollision(player);
+    //Emits the index if the player is colliding with a teleporter
+    if (
+      collidingTeleportPlayerIndex !== null &&
+      collidingTeleportPlayerIndex >= 0
+    ) {
+      socket.emit("Teleport", collidingTeleportPlayerIndex);
+    }
+
+    // otherwise move, emit, redraw
+    player.x += dx;
+    player.y += dy;
+    socket.emit("keydown", {
+      keycode: "key" + currentDirection[0].toUpperCase(),
+      sequenceNumber: ++sequenceNumber,
+    });
+    animate();
+  }
+}, 1000 / 60);
+
+export function animate() {
+  fgCtx.clearRect(0, 0, fgCanvas.width, fgCanvas.height);
+
+  // Draw Pac-Man
+  const pacman = frontEndPacMan[0];
+  if (pacman) {
+    pacman.draw();
+  }
+
+  // Draw players
+  for (const id in frontEndPlayers) {
+    frontEndPlayers[id].draw();
+    frontEndPlayers[id].draw();
+  }
+
+  // Draw power-ups
+  speedObjects.forEach((o) => o.draw());
+}
