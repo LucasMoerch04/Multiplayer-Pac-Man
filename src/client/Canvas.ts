@@ -1,14 +1,31 @@
-const canvas: HTMLCanvasElement = document.getElementById(
+// background canvas
+export const bgCanvas: HTMLCanvasElement = document.getElementById(
   "gameCanvas",
 ) as HTMLCanvasElement;
-const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
-//Jeg kan simpelhent ikke få det til at fungere at den henter baggrunden hvis baggrunden befinder sig i  game-assets
-const backgroundImage = new Image();
-backgroundImage.src = "game-assets/Background.png";
-console.log(backgroundImage);
-backgroundImage.onload = () => {
-    ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-    console.log(backgroundImage)
-  };
+export const bgCtx: CanvasRenderingContext2D = bgCanvas.getContext("2d")!;
 
-export {backgroundImage}
+// foreground canvas
+export const fgCanvas: HTMLCanvasElement = document.getElementById(
+  "gameState",
+) as HTMLCanvasElement;
+export const fgCtx: CanvasRenderingContext2D = fgCanvas.getContext("2d")!;
+
+export const canvasHeight = bgCanvas.height;
+export const canvasWidth = bgCanvas.width;
+
+export const backgroundImage = new Image();
+backgroundImage.src = "game-assets/Background.png";
+backgroundImage.onload = () => {
+  bgCtx.drawImage(backgroundImage, 0, 0, bgCanvas.width, bgCanvas.height);
+  console.log(backgroundImage);
+};
+
+export const redbullImage = new Image();
+redbullImage.src = "../game-assets/Redbull.png";
+redbullImage.onload = () => {
+  console.log(redbullImage);
+};
+
+export function drawBackground() {
+  bgCtx.drawImage(backgroundImage, 0, 0, bgCanvas.width, bgCanvas.height);
+}
