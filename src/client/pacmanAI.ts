@@ -9,7 +9,7 @@ type Mode = "hunt" | "run";
  */
 export class PacmanAI {
   // Hard-coded mode here for now:
-  private mode: Mode = "run";
+  private mode: Mode = "hunt";
 
   /**
    * @param pacman - the Pac-Man entity to control
