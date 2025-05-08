@@ -68,10 +68,10 @@ export const cherryObjects: PowerObject[] = [
 ];
 
 export const teleportObject: PowerObject[] = [
-  new PowerObject(290, 710, "blue", PowerType.TELEPORT),
-  new PowerObject(290 + 32, 710, "blue", PowerType.TELEPORT),
-  new PowerObject(928, 1350, "blue", PowerType.TELEPORT),
-  new PowerObject(928 + 32, 1350, "blue", PowerType.TELEPORT),
+  new PowerObject(290, 710, PowerType.TELEPORT),
+  new PowerObject(290 + 32, 710, PowerType.TELEPORT),
+  new PowerObject(928, 1350, PowerType.TELEPORT),
+  new PowerObject(928 + 32, 1350, PowerType.TELEPORT),
 ];
 
 // This function returns the index of the object that the player is colliding with
