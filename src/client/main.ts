@@ -11,7 +11,9 @@ import { fgCtx, fgCanvas } from "./Canvas";
 import {
   SpeedObjectCollision,
   speedObjects,
-  teleportObjectObjectCollision,
+  teleportObjectCollision,
+  cherryObjects,
+  cherryObjectCollision,
 } from "./Powers";
 
 import { buildClientGrid } from "./grid";
@@ -152,23 +154,37 @@ setInterval(() => {
     }
 
     if (player.checkCollisionWithPacman(frontEndPacMan[0])) {
-      socket.emit("eatPacman", socket.id);
+      if (pacmanAI.mode === "run") {
+        socket.emit("eatPacman", socket.id);
+      } else {
+        socket.emit("eatGhost", socket.id);
+      }
     }
 
     //This is constantly checking if a player has collided with a object and if so it returns the index of the object
-    const collidingSpeedPlayerIndex = SpeedObjectCollision(player);
-    if (collidingSpeedPlayerIndex !== null && collidingSpeedPlayerIndex >= 0) {
-      socket.emit("speedBoost", true);
+    const collidingSpeedObjectIndex = SpeedObjectCollision(player);
+    if (collidingSpeedObjectIndex !== null && collidingSpeedObjectIndex >= 0) {
+      socket.emit("speedBoost", true, collidingSpeedObjectIndex);
     }
 
     //Returns the index of the Teleporter Object the player is colliding with
-    const collidingTeleportPlayerIndex = teleportObjectObjectCollision(player);
-    //Emits the index if the player is colliding with a teleporter
+    const collidingTeleportObjectIndex = teleportObjectCollision(player);
     if (
-      collidingTeleportPlayerIndex !== null &&
-      collidingTeleportPlayerIndex >= 0
+      collidingTeleportObjectIndex !== null &&
+      collidingTeleportObjectIndex >= 0
     ) {
-      socket.emit("Teleport", collidingTeleportPlayerIndex);
+      socket.emit("Teleport", collidingTeleportObjectIndex);
+    }
+
+    // This checks if pacman is colliding with a cherry object and sets into hunt mode for 10 seconds
+    const collidingCherryObjectIndex = cherryObjectCollision(
+      frontEndPacMan[0]!,
+    );
+    if (collidingCherryObjectIndex !== -1) {
+      socket.emit("CherryCollision", collidingCherryObjectIndex);
+      pacmanAI.setHuntMode();
+
+      setTimeout(() => pacmanAI.setRunMode(), 10000);
     }
 
     // otherwise move, emit, redraw
@@ -199,4 +215,19 @@ export function animate() {
 
   // Draw power-ups
   speedObjects.forEach((o) => o.draw());
+  cherryObjects.forEach((o) => o.draw());
 }
+
+socket.on("deleteSpeedObject", (index: number) => {
+  console.log("Received deleteSpeedObject event with index:", index);
+
+  // Remove the speed object from the array
+  speedObjects.splice(index, 1);
+});
+
+socket.on("deleteCherryObject", (index: number) => {
+  console.log("Received deleteCherryObject event with index:", index);
+
+  // Remove the speed object from the array
+  cherryObjects.splice(index, 1);
+});
