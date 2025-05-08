@@ -70,19 +70,18 @@ export class BaseEntity implements Entity {
   checkCollision(dir: Direction, boundaries: Boundaries[]): boolean {
     let dx = 0;
     let dy = 0;
-    
+
     if (dir === "left") {
       dx = -this.speed;
     } else if (dir === "right") {
       dx = this.speed;
     }
-    
+
     if (dir === "up") {
       dy = -this.speed;
     } else if (dir === "down") {
       dy = this.speed;
     }
-    
 
     // simulate next frame's box
     const next = {

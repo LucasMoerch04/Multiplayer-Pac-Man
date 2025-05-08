@@ -91,28 +91,53 @@ export function setupWebSocket(io: Server) {
       io.emit("pacManEaten", playerId);
     });
 
+    socket.on("eatGhost", (playerId: string) => {
+      const player = backEndPlayers[playerId];
+      if (!player) return;
+
+      // Immediately “remove” the player
+      delete backEndPlayers[playerId];
+      io.emit("updatePlayers", backEndPlayers);
+      io.emit("playerDied", { id: playerId });
+
+      // After 10 seconds, respawn player at center (should probably be random spawn)
+      setTimeout(() => {
+        backEndPlayers[playerId] = {
+          x: 1664 / 2 - 10,
+          y: 1664 / 2 - 10,
+          color: "yellow",
+          speed: 5,
+          sequenceNumber: 0,
+        };
+        io.emit("updatePlayers", backEndPlayers);
+        io.to(playerId).emit("respawn", {
+          x: backEndPlayers[playerId].x,
+          y: backEndPlayers[playerId].y,
+        });
+      }, 10000);
+    });
+
     // Speed boost relay
     socket.on("speedBoost", (flag: boolean, index: number) => {
-      for (const pid in backEndPlayers) {
-        backEndPlayers[pid].speed = pid === id ? 2 : 10;
+      for (const playerID in backEndPlayers) {
+        backEndPlayers[playerID].speed = playerID === id ? 2 : 10;
       }
       io.emit("updatePlayers", backEndPlayers);
 
       io.emit("logMessage", `i got the index ${index}`);
       io.emit("deleteSpeedObject", index);
       setTimeout(() => {
-        for (const pid in backEndPlayers) backEndPlayers[pid].speed = 5;
+        for (const playerID in backEndPlayers)
+          backEndPlayers[playerID].speed = 5;
         io.emit("updatePlayers", backEndPlayers);
-      }, 10_000);
+      }, 10000);
     });
 
     socket.on("CherryCollision", (index: number) => {
       //write cherry code here
 
-
-      io.emit("deleteCherryObject", index)
-    })
-    
+      io.emit("deleteCherryObject", index);
+    });
 
     // Teleport relay
     socket.on("Teleport", (index: number) => {

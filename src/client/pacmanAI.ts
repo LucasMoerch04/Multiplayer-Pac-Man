@@ -9,7 +9,7 @@ type Mode = "hunt" | "run";
  */
 export class PacmanAI {
   // Hard-coded mode here for now:
-  private mode: Mode = "run";
+  public mode: Mode = "run";
 
   /**
    * @param pacman - the Pac-Man entity to control
@@ -20,8 +20,13 @@ export class PacmanAI {
     private grid: WalkableGrid,
   ) {}
 
-  private updateMode() {
-    // Currently hard-coded to "run"; extend with timers or game events if needed
+  public setHuntMode() {
+    this.mode = "hunt";
+    console.log("Pacman is in hunt mode");
+  }
+  public setRunMode() {
+    this.mode = "run";
+    console.log("Pacman is in run mode");
   }
 
   /**
@@ -31,7 +36,6 @@ export class PacmanAI {
   tick(players: SPlayer[]) {
     if (players.length === 0) return; // nothing to do if no players
 
-    this.updateMode();
     const start = toCell(this.pacman.x, this.pacman.y);
 
     // Determine goal pixel depending on hunt/run mode

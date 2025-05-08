@@ -11,12 +11,7 @@ class PowerObject extends BaseEntity {
   type: PowerType;
   image?: HTMLImageElement;
 
-  constructor(
-    x: number,
-    y: number,
-    type: PowerType,
-    image?: HTMLImageElement
-  ) {
+  constructor(x: number, y: number, type: PowerType, image?: HTMLImageElement) {
     super(x, y, "", 0); // Pass an empty string for color in BaseEntity
     this.type = type;
     this.image = image;
@@ -61,7 +56,7 @@ export const teleportObject: PowerObject[] = [
   new PowerObject(928 + 32, 1350, PowerType.TELEPORT),
 ];
 const firstBlock = 32;
-const lastBlock = 32*50;
+const lastBlock = 32 * 50;
 export const cherryObjects: PowerObject[] = [
   new PowerObject(firstBlock, firstBlock, PowerType.SPEED, cherryImage),
   new PowerObject(lastBlock, firstBlock, PowerType.SPEED, cherryImage),
@@ -99,14 +94,15 @@ export function teleportObjectCollision(player: {
   return -1;
 }
 
-export function cherryObjectCollision(player: {
+export function cherryObjectCollision(pacman: {
   x: number;
   y: number;
   width: number;
-  height: number
+  height: number;
 }): number {
   for (let i = 0; i < cherryObjects.length; i++) {
-    if (cherryObjects[i].checkPlayerCollision(player)) {
+    if (cherryObjects[i].checkPlayerCollision(pacman)) {
+      console.log(`Colliding with cherry object at index ${i}:`, i);
       return i;
     }
   }
