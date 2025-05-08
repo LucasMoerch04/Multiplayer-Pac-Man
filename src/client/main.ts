@@ -18,6 +18,7 @@ import {
 
 import { buildClientGrid } from "./grid";
 import { PacmanAI } from "./pacmanAI";
+import { PACMAN_SPEED } from "../shared/constants";
 
 export const socket = io("https://ghosts-revenge-eater-be-eaten.onrender.com/");
 
@@ -39,14 +40,14 @@ const frontEndPacMan: Pacman[] = [];
 
 // Build collision grid & instantiate local Pac-Man + AI
 const walkableGrid = buildClientGrid();
-const localPac = new Pacman(816, 816, "pacman", 5);
+const localPac = new Pacman(816, 816, "pacman", PACMAN_SPEED);
 frontEndPacMan[0] = localPac;
 const pacmanAI = new PacmanAI(localPac, walkableGrid);
 
 // If server forces Pac-Man position, override AI
 socket.on("updatePacMan", (pos: { x: number; y: number }) => {
   if (!frontEndPacMan[0]) {
-    frontEndPacMan[0] = new Pacman(pos.x, pos.y, "pacman", 5);
+    frontEndPacMan[0] = new Pacman(pos.x, pos.y, "pacman", PACMAN_SPEED);
   } else {
     frontEndPacMan[0].x = pos.x;
     frontEndPacMan[0].y = pos.y;

@@ -1,4 +1,5 @@
 import { Server, Socket } from "socket.io";
+import { GHOST_SPEED, GHOST_SPEED_BOOST, GHOST_SPEED_SLOW, PACMAN_SPEED } from "../shared/constants";
 
 /**
  * Sets up WebSocket event handling for the game.
@@ -24,7 +25,7 @@ export function setupWebSocket(io: Server) {
     x: 816,
     y: 816,
     color: "pacman",
-    speed: 6,
+    speed: PACMAN_SPEED,
   };
 
   io.on("connection", (socket: Socket) => {
@@ -36,7 +37,7 @@ export function setupWebSocket(io: Server) {
       x: 1664 / 2 - 10,
       y: 1664 / 2 - 10,
       color: "yellow",
-      speed: 5,
+      speed: GHOST_SPEED,
       sequenceNumber: 0,
     };
     io.emit("updatePlayers", backEndPlayers);
@@ -106,7 +107,7 @@ export function setupWebSocket(io: Server) {
           x: 1664 / 2 - 10,
           y: 1664 / 2 - 10,
           color: "yellow",
-          speed: 5,
+          speed: GHOST_SPEED,
           sequenceNumber: 0,
         };
         io.emit("updatePlayers", backEndPlayers);
@@ -120,7 +121,7 @@ export function setupWebSocket(io: Server) {
     // Speed boost relay
     socket.on("speedBoost", (flag: boolean, index: number) => {
       for (const playerID in backEndPlayers) {
-        backEndPlayers[playerID].speed = playerID === id ? 2 : 10;
+        backEndPlayers[playerID].speed = playerID === id ? GHOST_SPEED : GHOST_SPEED_BOOST;
       }
       io.emit("updatePlayers", backEndPlayers);
 
@@ -128,7 +129,7 @@ export function setupWebSocket(io: Server) {
       io.emit("deleteSpeedObject", index);
       setTimeout(() => {
         for (const playerID in backEndPlayers)
-          backEndPlayers[playerID].speed = 5;
+          backEndPlayers[playerID].speed = GHOST_SPEED;
         io.emit("updatePlayers", backEndPlayers);
       }, 10000);
     });
@@ -153,10 +154,10 @@ export function setupWebSocket(io: Server) {
           p.y = 710 + 32;
           break;
       }
-      p.speed = 2;
+      p.speed = GHOST_SPEED_SLOW;
       io.emit("updatePlayers", backEndPlayers);
       setTimeout(() => {
-        p.speed = 5;
+        p.speed = GHOST_SPEED;
         io.emit("updatePlayers", backEndPlayers);
       }, 10000);
     });
