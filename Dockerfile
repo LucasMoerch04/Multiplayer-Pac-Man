@@ -22,7 +22,7 @@ RUN npm install --production
 
 # Copy the built server code and client assets from the builder stage.
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/public ./public
+COPY --from=builder /app/docs ./docs
 
 # Expose the port and run the compiled server code.
 EXPOSE 3000
