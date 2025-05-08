@@ -26,6 +26,12 @@ redbullImage.onload = () => {
   console.log(redbullImage);
 };
 
+export const cherryImage = new Image();
+cherryImage.src = "../game-assets/Cherry.png";
+cherryImage.onload = () => {
+  console.log(cherryImage);
+};
+
 export function drawBackground() {
   bgCtx.drawImage(backgroundImage, 0, 0, bgCanvas.width, bgCanvas.height);
 }
