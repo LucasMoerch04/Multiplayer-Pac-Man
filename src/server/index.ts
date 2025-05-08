@@ -11,10 +11,8 @@ const io = new Server(server, { pingInterval: 2000, pingTimeout: 5000 });
 
 console.log("Starting server..."); // Log here should only appear once
 
-// Serve static files from the public directory
-app.use(express.static("public"));
-app.use(express.static("src/client"));
-app.use(express.static("public"));
+// Serve static files from the docs directory
+app.use(express.static("docs"));
 
 // Set up game-specific WebSocket event handling
 setupWebSocket(io);
