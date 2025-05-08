@@ -134,8 +134,6 @@ export function setupWebSocket(io: Server) {
     });
 
     socket.on("CherryCollision", (index: number) => {
-      //write cherry code here
-
       io.emit("deleteCherryObject", index);
     });
 

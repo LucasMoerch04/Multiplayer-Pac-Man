@@ -11,6 +11,7 @@ export class PacmanAI {
   // Hard-coded mode here for now:
   public mode: Mode = "run";
 
+
   /**
    * @param pacman - the Pac-Man entity to control
    * @param grid - boolean 2D grid of walkable cells
