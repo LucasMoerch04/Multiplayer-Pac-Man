@@ -5,6 +5,7 @@ import { BaseEntity } from "../shared/entities";
 enum PowerType {
   SPEED = "speed",
   TELEPORT = "teleport",
+  CHERRY = "cherry",
 }
 
 class PowerObject extends BaseEntity {
@@ -49,7 +50,7 @@ export const speedObjects: PowerObject[] = [
   new PowerObject(1550, 370, PowerType.SPEED, redbullImage),
 ];
 
-export const teleportObject: PowerObject[] = [
+export const teleportObjects: PowerObject[] = [
   new PowerObject(290, 710, PowerType.TELEPORT),
   new PowerObject(290 + 32, 710, PowerType.TELEPORT),
   new PowerObject(928, 1350, PowerType.TELEPORT),
@@ -58,10 +59,10 @@ export const teleportObject: PowerObject[] = [
 const firstBlock = 32;
 const lastBlock = 32 * 50;
 export const cherryObjects: PowerObject[] = [
-  new PowerObject(firstBlock, firstBlock, PowerType.SPEED, cherryImage),
-  new PowerObject(lastBlock, firstBlock, PowerType.SPEED, cherryImage),
-  new PowerObject(firstBlock, lastBlock, PowerType.SPEED, cherryImage),
-  new PowerObject(lastBlock, lastBlock, PowerType.SPEED, cherryImage),
+  new PowerObject(firstBlock, firstBlock, PowerType.CHERRY, cherryImage),
+  new PowerObject(lastBlock, firstBlock, PowerType.CHERRY, cherryImage),
+  new PowerObject(firstBlock, lastBlock, PowerType.CHERRY, cherryImage),
+  new PowerObject(lastBlock, lastBlock, PowerType.CHERRY, cherryImage),
 ];
 
 // This function returns the index of the object that the player is colliding with
@@ -85,8 +86,8 @@ export function teleportObjectCollision(player: {
   width: number;
   height: number;
 }): number {
-  for (let i = 0; i < teleportObject.length; i++) {
-    if (teleportObject[i].checkPlayerCollision(player)) {
+  for (let i = 0; i < teleportObjects.length; i++) {
+    if (teleportObjects[i].checkPlayerCollision(player)) {
       console.log(`Colliding with teleport object at index ${i}:`, i);
       return i;
     }
