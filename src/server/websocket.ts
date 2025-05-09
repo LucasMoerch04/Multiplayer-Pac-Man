@@ -18,23 +18,27 @@ export function setupWebSocket(io: Server) {
   const backEndPlayers: {
     [key: string]: { x: number; y: number; color: string; speed: number };
   } = {};
+  
   const pacMan: {
     [key: string]: { x: number; y: number; color: string; speed: number };
   } = {};
 
-  io.on("connection", (socket: Socket) => {
-    // listen for client connections
-    console.log("A user connected", socket.id);
+  const players = backEndPlayers;
 
+  io.on("connection", (socket: Socket) => {
+    console.log("A user connected", socket.id);
+    
     socket.on('updateColor', (data) => {
       const { color, playerId } = data;
     
-      if (players[playerId]) {
-        players[playerId].color = color;
-      }
-    
-      // Broadcast the updated color to all clients
-      io.emit('playerColorUpdated', { playerId, color });
+      socket.on('updateColor', (data) => {
+        const { color, playerId } = data;
+      
+        if (backEndPlayers[playerId]) {
+          backEndPlayers[playerId].color = color;
+          io.emit("updatePlayers", backEndPlayers); 
+        }
+      });
     });
     
     backEndPlayers[socket.id] = {
