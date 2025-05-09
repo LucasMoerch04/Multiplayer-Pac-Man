@@ -1,13 +1,61 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Pac-Man Game</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <h1 id="userCounter">Users Connected: 0</h1>
-    <canvas id="gameState" width="1664" height="1664"></canvas>
-    <canvas id="gameCanvas" width="1664" height="1664"></canvas>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <title>Pac-Man Game & Player Color</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      position: relative;
+    }
+
+    canvas {
+      border: 1px solid black;
+      display: block;
+      margin: auto;
+    }
+
+    .button-container {
+      position: absolute;
+      top: 80px; 
+      left: 850px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .color-button {
+      width: 50px;
+      height: 50px;
+      border: 2px solid black;
+      cursor: pointer;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .color-button:hover {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="userCounter">Users Connected: 0</h1>
+
+  <canvas id="gameState" width="1664" height="1664"></canvas>
+  <canvas id="gameCanvas" width="1664" height="1664"></canvas>
+
+  <div class="button-container">
+    <button class="color-button" style="background-color: red;" data-color="red"></button>
+    <button class="color-button" style="background-color: blue;" data-color="blue"></button>
+    <button class="color-button" style="background-color: green;" data-color="green"></button>
+    <button class="color-button" style="background-color: yellow;" data-color="yellow"></button>
+    <h2 id="color"> Current Team Color: </h2>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+
 </html>

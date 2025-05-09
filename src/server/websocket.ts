@@ -26,10 +26,21 @@ export function setupWebSocket(io: Server) {
     // listen for client connections
     console.log("A user connected", socket.id);
 
+    socket.on('updateColor', (data) => {
+      const { color, playerId } = data;
+    
+      if (players[playerId]) {
+        players[playerId].color = color;
+      }
+    
+      // Broadcast the updated color to all clients
+      io.emit('playerColorUpdated', { playerId, color });
+    });
+    
     backEndPlayers[socket.id] = {
       x: 1664 / 2 - 10, // random x position
       y: 1664 / 2 - 10, // random y position
-      color: "yellow", // Example color.
+      color: "green", // Example color.
       speed: 5, // Example speed.
     };
 

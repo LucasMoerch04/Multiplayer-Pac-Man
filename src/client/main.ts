@@ -72,7 +72,7 @@ socket.on("pacManStatus", (backendPacMan) => {
   animate(); // Opdater canvas med ny position
 });
 
-socket.on("updatePlayers", (backendPlayers) => {
+socket.on("updatePlayers", (backendPlayers) => { 
   for (const id in backendPlayers) {
     const backendPlayer = backendPlayers[id];
 
@@ -80,13 +80,13 @@ socket.on("updatePlayers", (backendPlayers) => {
       frontEndPlayers[id] = new SPlayer(
         backendPlayer.x,
         backendPlayer.y,
-        backendPlayer.color,
+        selectedColor,
         backendPlayer.speed,
-      ); // Create a new player instance if it doesn't exist
+      ); // Create a new player instance if it doewsn't exist
     } else {
       frontEndPlayers[id].x = backendPlayer.x;
       frontEndPlayers[id].y = backendPlayer.y;
-      frontEndPlayers[id].color = backendPlayer.color;
+      frontEndPlayers[id].color = selectedColor,
       frontEndPlayers[id].speed = backendPlayer.speed;
     }
 
@@ -206,3 +206,37 @@ window.addEventListener("keydown", function (event) {
   }
 });
 //const player = new SPlayer(70,70, "red"); // Create a new player instance with x, y and color
+
+let selectedColor: string = 'green'; // Global Starting color
+
+function chooseColor(color: string) {
+  selectedColor = color;
+
+  const colorDisplay = document.getElementById("color");
+  if (colorDisplay) {
+    colorDisplay.textContent = `Current Color: ${color}`;
+  }
+
+  console.log(`Selected color: ${color}`);
+
+  if (socket.id && frontEndPlayers[socket.id]) {
+    frontEndPlayers[socket.id].color = selectedColor;
+    animate(); 
+  }
+
+  socket.emit("updateColor", { color: selectedColor, playerId: socket.id });
+}
+
+function setupColorButtons() {
+  const buttons = document.querySelectorAll<HTMLButtonElement>(".color-button");
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const color = button.dataset.color;
+      if (color) {
+        chooseColor(color);
+      }
+    });
+  });
+}
+
+window.addEventListener("DOMContentLoaded", setupColorButtons);
