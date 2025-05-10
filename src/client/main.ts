@@ -86,7 +86,7 @@ socket.on("updatePlayers", (backendPlayers) => {
     } else {
       frontEndPlayers[id].x = backendPlayer.x;
       frontEndPlayers[id].y = backendPlayer.y;
-      frontEndPlayers[id].color = selectedColor,
+      frontEndPlayers[id].color = backendPlayer.color,
       frontEndPlayers[id].speed = backendPlayer.speed;
     }
 
