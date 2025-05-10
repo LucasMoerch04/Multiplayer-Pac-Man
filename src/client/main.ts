@@ -13,7 +13,7 @@ import {
   speedObjects,
   teleportObjectCollision,
   cherryObjects,
-  cherryObjectCollision
+  cherryObjectCollision,
 } from "./Powers";
 
 import { buildClientGrid } from "./grid";
@@ -154,26 +154,37 @@ setInterval(() => {
     }
 
     if (player.checkCollisionWithPacman(frontEndPacMan[0])) {
-      socket.emit("eatPacman", socket.id);
+      if (pacmanAI.mode === "run") {
+        socket.emit("eatPacman", socket.id);
+      } else {
+        socket.emit("eatGhost", socket.id);
+      }
     }
 
     //This is constantly checking if a player has collided with a object and if so it returns the index of the object
     const collidingSpeedObjectIndex = SpeedObjectCollision(player);
     if (collidingSpeedObjectIndex !== null && collidingSpeedObjectIndex >= 0) {
       socket.emit("speedBoost", true, collidingSpeedObjectIndex);
-      
     }
-    
+
     //Returns the index of the Teleporter Object the player is colliding with
     const collidingTeleportObjectIndex = teleportObjectCollision(player);
     if (
-      collidingTeleportObjectIndex !== null && collidingTeleportObjectIndex >= 0) {
+      collidingTeleportObjectIndex !== null &&
+      collidingTeleportObjectIndex >= 0
+    ) {
       socket.emit("Teleport", collidingTeleportObjectIndex);
     }
-    const collidingCherryObjectIndex = cherryObjectCollision(player);
-    if (
-      collidingCherryObjectIndex !== null && collidingCherryObjectIndex >= 0) {
+
+    // This checks if pacman is colliding with a cherry object and sets into hunt mode for 10 seconds
+    const collidingCherryObjectIndex = cherryObjectCollision(
+      frontEndPacMan[0]!,
+    );
+    if (collidingCherryObjectIndex !== -1) {
       socket.emit("CherryCollision", collidingCherryObjectIndex);
+      pacmanAI.setHuntMode();
+
+      setTimeout(() => pacmanAI.setRunMode(), 10000);
     }
 
     // otherwise move, emit, redraw
