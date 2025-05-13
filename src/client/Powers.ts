@@ -26,7 +26,6 @@ class PowerObject extends BaseEntity {
       fgCtx.fillStyle = "gray"; // Default placeholder color
       fgCtx.fillRect(this.x, this.y, this.width, this.height);
     }
-
   }
 
   checkPlayerCollision(player: {
@@ -64,14 +63,13 @@ export const cherryObjects: PowerObject[] = [
   new PowerObject(lastBlock, firstBlock, PowerType.CHERRY, cherryImage),
   new PowerObject(firstBlock, lastBlock, PowerType.CHERRY, cherryImage),
   new PowerObject(lastBlock, lastBlock, PowerType.CHERRY, cherryImage),
-
 ];
 
 export const teleportObject: PowerObject[] = [
-  new PowerObject(290, 710, "blue", PowerType.TELEPORT),
-  new PowerObject(290 + 32, 710, "blue", PowerType.TELEPORT),
-  new PowerObject(928, 1350, "blue", PowerType.TELEPORT),
-  new PowerObject(928 + 32, 1350, "blue", PowerType.TELEPORT),
+  new PowerObject(290, 710, PowerType.TELEPORT),
+  new PowerObject(290 + 32, 710, PowerType.TELEPORT),
+  new PowerObject(928, 1350, PowerType.TELEPORT),
+  new PowerObject(928 + 32, 1350, PowerType.TELEPORT),
 ];
 
 // This function returns the index of the object that the player is colliding with
@@ -90,7 +88,6 @@ export function SpeedObjectCollision(player: {
 }
 
 export function teleportObjectCollision(player: {
-
   x: number;
   y: number;
   width: number;
@@ -98,7 +95,6 @@ export function teleportObjectCollision(player: {
 }): number {
   for (let i = 0; i < teleportObjects.length; i++) {
     if (teleportObjects[i].checkPlayerCollision(player)) {
-
       console.log(`Colliding with teleport object at index ${i}:`, i);
       return i;
     }

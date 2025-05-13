@@ -23,8 +23,6 @@ export function buildClientGrid(): WalkableGrid {
       }
     }
   }
-  console.log("grid size:", rows, "x", cols);
-
   return grid;
 }
 
