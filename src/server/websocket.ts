@@ -28,14 +28,19 @@ export function setupWebSocket(io: Server) {
     speed: PACMAN_SPEED,
   };
 
+  const players = backEndPlayers;
+
   io.on("connection", (socket: Socket) => {
     const id = socket.id;
     console.log("User connected:", id);
 
+    const cornerX = randomCornerX();
+    const cornerY = randomCornerY();
+
     // Initialize new player at center
     backEndPlayers[id] = {
-      x: 1664 / 2 - 10,
-      y: 1664 / 2 - 10,
+      x: cornerX,
+      y: cornerY,
       color: "yellow",
       speed: GHOST_SPEED,
       sequenceNumber: 0,
@@ -104,8 +109,8 @@ export function setupWebSocket(io: Server) {
       // After 10 seconds, respawn player at center (should probably be random spawn)
       setTimeout(() => {
         backEndPlayers[playerId] = {
-          x: 1664 / 2 - 10,
-          y: 1664 / 2 - 10,
+          x: cornerX,
+          y: cornerY,
           color: "yellow",
           speed: GHOST_SPEED,
           sequenceNumber: 0,
@@ -125,7 +130,6 @@ export function setupWebSocket(io: Server) {
       }
       io.emit("updatePlayers", backEndPlayers);
 
-      io.emit("logMessage", `i got the index ${index}`);
       io.emit("deleteSpeedObject", index);
       setTimeout(() => {
         for (const playerID in backEndPlayers)
@@ -162,6 +166,11 @@ export function setupWebSocket(io: Server) {
       }, 10000);
     });
 
+    // Handle color change
+    socket.on("changeColor", (color: string) => {
+      io.emit("changeTeamColor", color)
+    });
+
     // Handle disconnect
     socket.on("disconnect", (reason) => {
       console.log("User disconnected:", id, "reason:", reason);
@@ -171,4 +180,33 @@ export function setupWebSocket(io: Server) {
       io.emit("updateCounter", { countUsers });
     });
   });
+}
+
+function randomCornerX() {
+  switch (Math.floor(Math.random() * 4)) {
+    case 0: // top left
+      return 50;
+    case 1: // top right
+      return 1664 - 32 - 50;
+    case 2: // bottom left
+      return 50;
+    case 3: // bottom right
+      return 1664 - 32 - 50;
+    default:
+      return 50; // Fallback value
+  }
+}
+function randomCornerY() {
+  switch (Math.floor(Math.random() * 4)) {
+    case 0: // top left
+      return 50;
+    case 1: // top right
+      return 1664 - 32 - 50;
+    case 2: // bottom left
+      return 50;
+    case 3: // bottom right
+      return 1664 - 32 - 50;
+    default:
+      return 50; // Fallback value
+  }
 }

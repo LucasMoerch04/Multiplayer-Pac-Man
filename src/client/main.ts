@@ -35,8 +35,8 @@ socket.on("updateCounter", (data) => {
 });
 
 // Store all remote players and Pac-Man
-const frontEndPlayers: { [key: string]: SPlayer } = {};
-const frontEndPacMan: Pacman[] = [];
+export const frontEndPlayers: { [key: string]: SPlayer } = {};
+export const frontEndPacMan: Pacman[] = [];
 
 // Build collision grid & instantiate local Pac-Man + AI
 const walkableGrid = buildClientGrid();
@@ -120,6 +120,7 @@ window.addEventListener("keydown", (e) => {
       break;
   }
 });
+
 
 let currentDirection: "up" | "down" | "left" | "right" | null = null;
 let sequenceNumber = 0;
@@ -232,3 +233,49 @@ socket.on("deleteCherryObject", (index: number) => {
   // Remove the speed object from the array
   cherryObjects.splice(index, 1);
 });
+      
+//const player = new SPlayer(70,70, "red"); // Create a new player instance with x, y and color
+
+let selectedColor: string = 'green'; // Global Starting color
+
+function chooseColor(color: string) {
+  selectedColor = color;
+  console.log(`Selected color: ${color}`);
+
+
+  // Update the color of the local player
+  if (socket.id && frontEndPlayers[socket.id]) {
+    frontEndPlayers[socket.id].color = selectedColor;
+    animate(); 
+  }
+
+  socket.emit("changeColor", selectedColor);
+}
+
+// handle server broadcast
+socket.on("changeTeamColor", (color: string) => {
+  // apply to all remote players
+  Object.values(frontEndPlayers).forEach((player) => {
+    player.color = color
+  })
+  const colorDisplay = document.getElementById("color");
+  if (colorDisplay) {
+    colorDisplay.textContent = `Current Color: ${color}`;
+  }
+
+  animate()
+})
+function setupColorButtons() {
+  const buttons = document.querySelectorAll<HTMLButtonElement>(".color-button");
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const color = button.dataset.color;
+      if (color) {
+        chooseColor(color);
+      }
+    });
+  });
+}
+
+window.addEventListener("DOMContentLoaded", setupColorButtons);
+
