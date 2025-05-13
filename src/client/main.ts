@@ -239,22 +239,31 @@ let selectedColor: string = 'green'; // Global Starting color
 
 function chooseColor(color: string) {
   selectedColor = color;
-
-  const colorDisplay = document.getElementById("color");
-  if (colorDisplay) {
-    colorDisplay.textContent = `Current Color: ${color}`;
-  }
-
   console.log(`Selected color: ${color}`);
 
+
+  // Update the color of the local player
   if (socket.id && frontEndPlayers[socket.id]) {
     frontEndPlayers[socket.id].color = selectedColor;
     animate(); 
   }
 
-  socket.emit("updateColor", { color: selectedColor, playerId: socket.id });
+  socket.emit("changeColor", selectedColor);
 }
 
+// handle server broadcast
+socket.on("changeTeamColor", (color: string) => {
+  // apply to all remote players
+  Object.values(frontEndPlayers).forEach((player) => {
+    player.color = color
+  })
+  const colorDisplay = document.getElementById("color");
+  if (colorDisplay) {
+    colorDisplay.textContent = `Current Color: ${color}`;
+  }
+
+  animate()
+})
 function setupColorButtons() {
   const buttons = document.querySelectorAll<HTMLButtonElement>(".color-button");
   buttons.forEach((button) => {

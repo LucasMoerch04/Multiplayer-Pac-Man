@@ -163,6 +163,11 @@ export function setupWebSocket(io: Server) {
       }, 10000);
     });
 
+    // Handle color change
+    socket.on("changeColor", (color: string) => {
+      io.emit("changeTeamColor", color)
+    });
+
     // Handle disconnect
     socket.on("disconnect", (reason) => {
       console.log("User disconnected:", id, "reason:", reason);
