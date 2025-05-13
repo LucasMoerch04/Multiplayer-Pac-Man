@@ -34,8 +34,8 @@ socket.on("updateCounter", (data) => {
 });
 
 // Store all remote players and Pac-Man
-const frontEndPlayers: { [key: string]: SPlayer } = {};
-const frontEndPacMan: Pacman[] = [];
+export const frontEndPlayers: { [key: string]: SPlayer } = {};
+export const frontEndPacMan: Pacman[] = [];
 
 // Build collision grid & instantiate local Pac-Man + AI
 const walkableGrid = buildClientGrid();
