@@ -21,7 +21,7 @@ const config = {
   },
   output: {
     filename: "bundle.js",
-    path: path.resolve(process.cwd(), "public"),
+    path: path.resolve(process.cwd(), "dist"),
   },
   plugins: [
     new HtmlWebpackPlugin({
