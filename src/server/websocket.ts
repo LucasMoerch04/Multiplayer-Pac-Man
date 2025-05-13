@@ -27,6 +27,8 @@ export function setupWebSocket(io: Server) {
     speed: 6,
   };
 
+  const players = backEndPlayers;
+
   io.on("connection", (socket: Socket) => {
     const id = socket.id;
     console.log("User connected:", id);
@@ -159,6 +161,11 @@ export function setupWebSocket(io: Server) {
         p.speed = 5;
         io.emit("updatePlayers", backEndPlayers);
       }, 10000);
+    });
+
+    // Handle color change
+    socket.on("changeColor", (color: string) => {
+      io.emit("changeTeamColor", color)
     });
 
     // Handle disconnect
