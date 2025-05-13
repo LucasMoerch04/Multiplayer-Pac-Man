@@ -108,8 +108,8 @@ export function setupWebSocket(io: Server) {
       // After 10 seconds, respawn player at center (should probably be random spawn)
       setTimeout(() => {
         backEndPlayers[playerId] = {
-          x: 1664 / 2 - 10,
-          y: 1664 / 2 - 10,
+          x: cornerX,
+          y: cornerY,
           color: "yellow",
           speed: 5,
           sequenceNumber: 0,
@@ -129,7 +129,6 @@ export function setupWebSocket(io: Server) {
       }
       io.emit("updatePlayers", backEndPlayers);
 
-      io.emit("logMessage", `i got the index ${index}`);
       io.emit("deleteSpeedObject", index);
       setTimeout(() => {
         for (const playerID in backEndPlayers)
