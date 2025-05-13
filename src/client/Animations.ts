@@ -25,40 +25,52 @@ export function setPacManDirection(direction: string): void {
 // animation.ts
 
 // Denne funktion får en retning som input og ændrer en Ghost's rotation
-export function setGhostDirection(ghostId: string, direction: string): void {
-  const ghost = document.getElementById(ghostId) as HTMLElement;
+export function setGhostDirection(ghostId: string, direction: string) {
+  const ghost = document.getElementById(ghostId) as HTMLImageElement;
+  
+  if (!ghost) return; // Ensure the ghost element exists
 
   switch (direction) {
-    case "right":
-      ghost.style.transform = "rotate(0deg)"; // Ghost kigger mod højre
-      break;
-    case "left":
-      ghost.style.transform = "rotate(180deg)"; // Ghost kigger mod venstre
-      break;
     case "up":
-      ghost.style.transform = "rotate(90deg)"; // Ghost kigger op
+      ghost.src = `${ghostId}up.png`;  // e.g., ghostYellowup.png
       break;
     case "down":
-      ghost.style.transform = "rotate(-90deg)"; // Ghost kigger ned
+      ghost.src = `${ghostId}down.png`; // e.g., ghostYellowdown.png
+      break;
+    case "left":
+      ghost.src = `${ghostId}left.png`; // e.g., ghostYellowleft.png
+      break;
+    case "right":
+      ghost.src = `${ghostId}right.png`; // e.g., ghostYellowright.png
       break;
     default:
-      console.log("Ukendt retning");
+      ghost.src = `${ghostId}.png`; // Default image (e.g., ghostYellow.png)
+      break;
   }
 }
 
+
+let pacmanMouthInterval: number | undefined;
+
 export function startPacManMouthAnimation(): void {
-  const pacman = document.getElementById("pacman") as HTMLElement;
-  if (!pacman) return;
+  const pacman = document.getElementById("pacman");
+  if (pacman === null) {
+    return;
+  }
 
   let frame = 0;
-  setInterval(() => {
+  pacmanMouthInterval = window.setInterval(() => {
     frame++;
-    pacman.style.backgroundImage =
-      frame % 2 === 0
-        ? "url('assets/pacman_open.png')"
-        : "url('assets/pacman_closed.png')";
+    if (pacman !== null) {
+      if (frame % 2 === 0) {
+        pacman.style.backgroundImage = "url('assets/pacman_open.png')";
+      } else {
+        pacman.style.backgroundImage = "url('assets/pacman_closed.png')";
+      }
+    }
   }, 150);
 }
+
 
 export function playPowerUpAnimation(): void {
   const pacman = document.getElementById("pacman") as HTMLElement;
