@@ -19,13 +19,13 @@ interface Entity {
 
 // preload all textures into a map
 const textures: Record<string, HTMLImageElement> = {
-  yellow: Object.assign(new Image(), { src: "/game-assets/ghostYellow.png" }),
-  blue: Object.assign(new Image(), { src: "/game-assets/ghostBlue.png" }),
-  aqua: Object.assign(new Image(), { src: "/game-assets/ghostAqua.png" }),
-  pink: Object.assign(new Image(), { src: "/game-assets/ghostPink.png" }),
-  white: Object.assign(new Image(), { src: "/game-assets/ghostWhite.png" }),
-  pacman: Object.assign(new Image(), { src: "/game-assets/pacMan.png" }),
-  red: Object.assign(new Image(), { src: "/game-assets/ghostRed.png" }),
+  yellow: Object.assign(new Image(), { src: "game-assets/ghostYellow.png" }),
+  blue: Object.assign(new Image(), { src: "game-assets/ghostBlue.png" }),
+  aqua: Object.assign(new Image(), { src: "game-assets/ghostAqua.png" }),
+  pink: Object.assign(new Image(), { src: "game-assets/ghostPink.png" }),
+  white: Object.assign(new Image(), { src: "game-assets/ghostWhite.png" }),
+  pacman: Object.assign(new Image(), { src: "game-assets/pacMan.png" }),
+  red: Object.assign(new Image(), { src: "game-assets/ghostRed.png" }),
 };
 
 export class BaseEntity implements Entity {

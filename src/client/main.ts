@@ -19,7 +19,7 @@ import {
 import { buildClientGrid } from "./grid";
 import { PacmanAI } from "./pacmanAI";
 
-export const socket = io();
+export const socket = io("https://ghosts-revenge-eater-be-eaten.onrender.com/");
 
 // On connect, announce and register
 socket.on("connect", () => {

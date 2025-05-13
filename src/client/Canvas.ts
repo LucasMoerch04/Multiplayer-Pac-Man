@@ -21,7 +21,7 @@ backgroundImage.onload = () => {
 };
 
 export const redbullImage = new Image();
-redbullImage.src = "../game-assets/Redbull.png";
+redbullImage.src = "game-assets/Redbull.png";
 redbullImage.onload = () => {
   console.log(redbullImage);
 };
