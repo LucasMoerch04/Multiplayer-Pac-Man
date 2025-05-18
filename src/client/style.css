@@ -1,146 +1,216 @@
-canvas {
-  position: absolute;
-  top: 10;
-  left: 0;
-  transform: scale(0.5);
-  transform-origin: top left;
-  background-color: transparent;
-}
-
-#gameCanvas {
-  /*Sætter dette canvas bagerst*/
-  z-index: -2;
-}
-
-#gameState {
-  /*Sætter dette canvas forest*/
-  z-index: -1;
-}
-
 body {
   margin: 0;
   font-family: sans-serif;
   position: relative;
+  min-height: 100vh;
+  background: #10131c;
 }
 
+#topContainer {
+  background-color: #0e1529;  
+  height: 70px;
+  margin-bottom: 5px;
+  width: 812px;
+  border: 5px solid;
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  padding-left: 10px;
+  padding-right: 10px;
+  display: flex;
+  justify-content: space-between;
+  border-color: linear-gradient(to bottom, #0e1529, #1a1e2b);
+}
+#gameTitle {
+  color: rgb(245, 235, 235);
+
+  font-size: 30px;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+#userCounter {
+  color: rgb(245, 235, 235);
+  font-size: 20px;
+}
+
+#gameContainer {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: red;
+  z-index: 1;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #556080, #1a1e2b);
+}
+
+/* All game canvases centered and scaled */
 canvas {
-  border: 1px solid black;
+  position: absolute;
+  top: 20;
+  left: 50;
+  border: 8px solid;
+  border-radius: 25px;
+  border-color: linear-gradient(to bottom, #0e1529, #1a1e2b);
   display: block;
-  margin: auto;
+  margin: 0 auto;
+  transform: scale(0.5);
+  transform-origin: top left;
+  background: transparent;
+  z-index: 2;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
+/* Game state canvas is above game canvas */
+#gameCanvas { z-index: 2; background-color: #0e1529;}
+#gameState { z-index: 3; }
+
+/* Menu, overlays, and tints go above everything */
+#menu, #background, #tint, #namesquare, #flag, #farve, #hat {
+  z-index: 10;
+}
+
+/* Button panel styles */
 .button-container {
   position: absolute;
-  top: 80px; 
+  top: 80px;
   left: 850px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  z-index: 12;
+  border: #0e1529 solid 8px;
+  border-radius: 25px;
+  background-color: #01071d;
+  color: rgb(245, 235, 235);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+  border: #0e1529 solid 2px;
+  padding: 10px;
+  width: fit-content;
+  border-radius: 35px;
+  background-color: #061030;
+
 }
 
 .color-button {
   width: 50px;
   height: 50px;
-  border: 2px solid black;
-  cursor: pointer;
+  border: 1px solid black;
   border-radius: 50%;
+  cursor: pointer;
   transition: transform 0.2s;
+  margin: 3px;
+}
+.color-button:hover { transform: scale(1.1); }
+
+#chosenColor {
+  width: 80%;
+  height: 40px;
+  border: 1px solid black;
+  border-radius: 25px;
+  background-color: aqua;
+  margin: 10px;
+
 }
 
-.color-button:hover {
-  transform: scale(1.1);
+#colorText {
+  margin: 10px;
+  font-size: medium;
+}
+
+#keys {
+  position: absolute;
+  bottom: 30px;
+  left: 850px;
+  z-index: 12;
 }
 
 #background {
-  background: rgba(0, 0, 0, 0.438) url("game-assets/MenuBackground.jpg");
-  background-size: cover;
-  width: 100%;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
   height: 100vh;
+  background: rgba(0,0,0,0.44) url("game-assets/MenuBackground.jpg") center/cover;
   filter: blur(4px);
-  -webkit-filter: blur(4px);
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-#menu {
-  z-index: 3;
+  z-index: 8;
 }
 
 #tint {
-  background: rgba(0, 0, 0, 0.3); /* hvis du vil have en mørk overlay-tint */
-  filter: brightness(100%);
-  width: 100%;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
   height: 100vh;
-  position: absolute;
-  top: 0;
-  left: 0;
-
+  background: rgba(0,0,0,0.3);
+  z-index: 9;
 }
+
+/* Start button and flag styling */
 #startButton {
   position: fixed;
-  top: 43.17%;
-  left: 43.3%;
-
+  top: 43%;
+  left: 43%;
   width: 200px;
-  height: auto;
-
+  z-index: 11;
+  transition: transform 0.2s;
 }
-#startButton:hover{
-  transform: scale(1.1);
-}
+#startButton:hover { transform: scale(1.1); }
 
-#flag{
+#flag {
   position: fixed;
   top: 13.5%;
   left: 33.4%;
   width: 500px;
-  height: auto;
+  z-index: 11;
 }
 
 #namesquare {
-  background: rgba(0, 0, 0, 0.3); /* hvis du vil have en mørk overlay-tint */
-  filter: brightness(100%);
-  width: 25%;
-  height: 35%;
   position: absolute;
   top: 0;
   left: 0;
+  width: 25%;
+  height: 35%;
+  background: rgba(0,0,0,0.3);
   display: flex;
   flex-direction: column;
+  z-index: 12;
 }
-
-.ghost{
+.players {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.players p {
+  color: white;
+  font-size: 20px;
+  margin-left: 10px;
+}
+.ghost {
   width: 20%;
   height: auto;
 }
 
-.players{
-  width: 100%;
-  height: auto;
-  display: flex;
-}
-.players p{
-  color: white;
-  font-size: 20px;
-}
-#farve{
+/* Icons/inputs left side */
+#farve {
   position: fixed;
   width: 7.5%;
-  height: auto;
   top: 35%;
   left: 0;
+  z-index: 11;
+  transition: transform 0.2s;
 }
-#farve:hover{
-  transform: scale(1.1);
-}
-#hat{
+#farve:hover { transform: scale(1.1); }
+#hat {
   position: fixed;
   width: 7.5%;
-  height: auto;
   top: 36.5%;
   left: 7%;
+  z-index: 11;
+  transition: transform 0.2s;
 }
-#hat:hover{
-  transform: scale(1.1);
-}
+#hat:hover { transform: scale(1.1); }

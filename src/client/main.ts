@@ -22,7 +22,6 @@ import { PacmanAI } from "./pacmanAI";
 import { PACMAN_SPEED } from "../shared/constants";
 import { initializeCanvases } from "./menu";
 
-//export const socket = io("https://ghosts-revenge-eater-be-eaten.onrender.com/");
 export const socket = io();
 
 // On connect, announce and register
@@ -34,7 +33,7 @@ socket.on("connect", () => {
 // Show connected count
 socket.on("updateCounter", (data) => {
   (document.getElementById("userCounter")! as HTMLElement).innerText =
-    `Users Connected: ${data.countUsers}`;
+    `Users: ${data.countUsers}`;
 });
 
 socket.on("startGame", () => {
@@ -267,9 +266,9 @@ socket.on("changeTeamColor", (color: string) => {
   Object.values(frontEndPlayers).forEach((player) => {
     player.color = color
   })
-  const colorDisplay = document.getElementById("color");
-  if (colorDisplay) {
-    colorDisplay.textContent = `Current Color: ${color}`;
+  const colorBox = document.getElementById("chosenColor")
+  if (colorBox) {
+    colorBox.style.backgroundColor = color;
   }
 
   animate()
