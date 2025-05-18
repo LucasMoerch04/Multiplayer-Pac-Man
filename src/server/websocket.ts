@@ -54,6 +54,10 @@ export function setupWebSocket(io: Server) {
       io.emit("updateCounter", { countUsers });
     });
 
+    socket.on("startGame", () => {
+      io.emit("startGame")
+    })
+
     // Client-driven player movement
     socket.on(
       "keydown",

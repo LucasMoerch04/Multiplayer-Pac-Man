@@ -1,6 +1,6 @@
-import path from "path";
-import HtmlWebpackPlugin from "html-webpack-plugin";
-import CopyPlugin from "copy-webpack-plugin";
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyPlugin = require('copy-webpack-plugin')
 
 /** @type {import('webpack').Configuration} */
 const config = {
@@ -23,7 +23,7 @@ const config = {
   },
   output: {
     filename: "bundle.js",
-    path: path.resolve(process.cwd(), "docs"),
+    path: path.resolve(process.cwd(), "dist"),
     publicPath: "./"
   },
   plugins: [

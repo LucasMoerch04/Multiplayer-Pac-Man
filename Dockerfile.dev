@@ -13,7 +13,7 @@ RUN adduser -D appuser && chown -R appuser:appuser /app
 COPY . .
 
 # Create the public directory and fix permissions
-RUN mkdir -p /app/public && chown -R appuser:appuser /app/public
+RUN mkdir -p /app/dist && chown -R appuser:appuser /app/dist
 
 EXPOSE 3000
 

@@ -4,10 +4,11 @@ import "./Collisionstext";
 import "./Powers";
 import "./Canvas";
 import "./style.css";
+import "./menu";
 
 import { SPlayer, Pacman } from "../shared/entities";
 import { boundaryArray } from "./CollisionBlocks";
-import { fgCtx, fgCanvas } from "./Canvas";
+import { fgCtx, fgCanvas, drawBackground } from "./Canvas";
 import {
   SpeedObjectCollision,
   speedObjects,
@@ -19,8 +20,10 @@ import {
 import { buildClientGrid } from "./grid";
 import { PacmanAI } from "./pacmanAI";
 import { PACMAN_SPEED } from "../shared/constants";
+import { initializeCanvases } from "./menu";
 
-export const socket = io("https://ghosts-revenge-eater-be-eaten.onrender.com/");
+//export const socket = io("https://ghosts-revenge-eater-be-eaten.onrender.com/");
+export const socket = io();
 
 // On connect, announce and register
 socket.on("connect", () => {
@@ -32,6 +35,13 @@ socket.on("connect", () => {
 socket.on("updateCounter", (data) => {
   (document.getElementById("userCounter")! as HTMLElement).innerText =
     `Users Connected: ${data.countUsers}`;
+});
+
+socket.on("startGame", () => {
+  initializeCanvases();
+  drawBackground();
+  animate();
+  console.log(frontEndPlayers)
 });
 
 // Store all remote players and Pac-Man
@@ -277,5 +287,6 @@ function setupColorButtons() {
   });
 }
 
-window.addEventListener("DOMContentLoaded", setupColorButtons);
-
+window.addEventListener("DOMContentLoaded", () => {
+  setupColorButtons();
+});
