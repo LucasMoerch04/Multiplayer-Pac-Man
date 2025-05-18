@@ -7,7 +7,7 @@ body {
 }
 
 #topContainer {
-  background-color: #0e1529;  
+  background-color: #0e1529;
   height: 70px;
   margin-bottom: 5px;
   width: 812px;
@@ -61,11 +61,22 @@ canvas {
 }
 
 /* Game state canvas is above game canvas */
-#gameCanvas { z-index: 2; background-color: #0e1529;}
-#gameState { z-index: 3; }
+#gameCanvas {
+  z-index: 2;
+  background-color: #0e1529;
+}
+#gameState {
+  z-index: 3;
+}
 
 /* Menu, overlays, and tints go above everything */
-#menu, #background, #tint, #namesquare, #flag, #farve, #hat {
+#menu,
+#background,
+#tint,
+#namesquare,
+#flag,
+#farve,
+#hat {
   z-index: 10;
 }
 
@@ -83,7 +94,6 @@ canvas {
   background-color: #01071d;
   color: rgb(245, 235, 235);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-
 }
 
 .buttons {
@@ -95,7 +105,6 @@ canvas {
   width: fit-content;
   border-radius: 35px;
   background-color: #061030;
-
 }
 
 .color-button {
@@ -107,7 +116,9 @@ canvas {
   transition: transform 0.2s;
   margin: 3px;
 }
-.color-button:hover { transform: scale(1.1); }
+.color-button:hover {
+  transform: scale(1.1);
+}
 
 #chosenColor {
   width: 80%;
@@ -116,7 +127,6 @@ canvas {
   border-radius: 25px;
   background-color: aqua;
   margin: 10px;
-
 }
 
 #colorText {
@@ -133,20 +143,23 @@ canvas {
 
 #background {
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0,0,0,0.44) url("game-assets/MenuBackground.jpg") center/cover;
+  background: rgba(0, 0, 0, 0.44) url("game-assets/MenuBackground.jpg")
+    center/cover;
   filter: blur(4px);
   z-index: 8;
 }
 
 #tint {
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   z-index: 9;
 }
 
@@ -159,7 +172,9 @@ canvas {
   z-index: 11;
   transition: transform 0.2s;
 }
-#startButton:hover { transform: scale(1.1); }
+#startButton:hover {
+  transform: scale(1.1);
+}
 
 #flag {
   position: fixed;
@@ -175,7 +190,7 @@ canvas {
   left: 0;
   width: 25%;
   height: 35%;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   z-index: 12;
@@ -204,7 +219,9 @@ canvas {
   z-index: 11;
   transition: transform 0.2s;
 }
-#farve:hover { transform: scale(1.1); }
+#farve:hover {
+  transform: scale(1.1);
+}
 #hat {
   position: fixed;
   width: 7.5%;
@@ -213,4 +230,6 @@ canvas {
   z-index: 11;
   transition: transform 0.2s;
 }
-#hat:hover { transform: scale(1.1); }
+#hat:hover {
+  transform: scale(1.1);
+}

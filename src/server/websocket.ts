@@ -1,5 +1,10 @@
 import { Server, Socket } from "socket.io";
-import { GHOST_SPEED, GHOST_SPEED_BOOST, GHOST_SPEED_SLOW, PACMAN_SPEED } from "../shared/constants";
+import {
+  GHOST_SPEED,
+  GHOST_SPEED_BOOST,
+  GHOST_SPEED_SLOW,
+  PACMAN_SPEED,
+} from "../shared/constants";
 
 /**
  * Sets up WebSocket event handling for the game.
@@ -55,8 +60,8 @@ export function setupWebSocket(io: Server) {
     });
 
     socket.on("startGame", () => {
-      io.emit("startGame")
-    })
+      io.emit("startGame");
+    });
 
     // Client-driven player movement
     socket.on(
@@ -130,7 +135,8 @@ export function setupWebSocket(io: Server) {
     // Speed boost relay
     socket.on("speedBoost", (flag: boolean, index: number) => {
       for (const playerID in backEndPlayers) {
-        backEndPlayers[playerID].speed = playerID === id ? GHOST_SPEED : GHOST_SPEED_BOOST;
+        backEndPlayers[playerID].speed =
+          playerID === id ? GHOST_SPEED : GHOST_SPEED_BOOST;
       }
       io.emit("updatePlayers", backEndPlayers);
 
@@ -178,7 +184,7 @@ export function setupWebSocket(io: Server) {
           backEndPlayers[playerID].color = selectedColor;
         }
       }
-      io.emit("changeTeamColor", color)
+      io.emit("changeTeamColor", color);
     });
 
     // Handle disconnect

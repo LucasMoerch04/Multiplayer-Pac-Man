@@ -11,7 +11,6 @@ export class PacmanAI {
   // Hard-coded mode here for now:
   public mode: Mode = "run";
 
-
   /**
    * @param pacman - the Pac-Man entity to control
    * @param grid - boolean 2D grid of walkable cells
@@ -36,26 +35,29 @@ export class PacmanAI {
    */
   tick(players: SPlayer[]) {
     const start = toCell(this.pacman.x, this.pacman.y);
-  
+
     let goalPixel;
-  
+
     if (players.length === 0) {
       // Random movement - look at four neighbors and pick one that’s walkable
       // He just shakes around quickly, but better than standing still
       const deltas = [
         { dr: -1, dc: 0 },
-        { dr: 1,  dc: 0 },
-        { dr: 0,  dc: -1 },
-        { dr: 0,  dc: 1 },
+        { dr: 1, dc: 0 },
+        { dr: 0, dc: -1 },
+        { dr: 0, dc: 1 },
       ];
       const valid = deltas
-        .map(d => ({ row: start.row + d.dr, col: start.col + d.dc }))
-        .filter(c =>
-          c.row >= 0 && c.row < this.grid.length &&
-          c.col >= 0 && c.col < this.grid[0].length &&
-          this.grid[c.row][c.col]
+        .map((d) => ({ row: start.row + d.dr, col: start.col + d.dc }))
+        .filter(
+          (c) =>
+            c.row >= 0 &&
+            c.row < this.grid.length &&
+            c.col >= 0 &&
+            c.col < this.grid[0].length &&
+            this.grid[c.row][c.col],
         );
-  
+
       // if we have at least one option, pick randomly, else stay in place
       if (valid.length > 0) {
         const choice = valid[Math.floor(Math.random() * valid.length)];
@@ -63,25 +65,25 @@ export class PacmanAI {
       } else {
         return; // nowhere to go
       }
-  
     } else {
       // existing logic
-      goalPixel = (this.mode === "hunt")
-        ? this.chooseNearestPlayer(players)
-        : this.chooseSafeCorner(players);
+      goalPixel =
+        this.mode === "hunt"
+          ? this.chooseNearestPlayer(players)
+          : this.chooseSafeCorner(players);
     }
-  
+
     // Pathfind toward the chosen goal
     const goalCell = toCell(goalPixel.x, goalPixel.y);
     const path = aStar(this.grid, start, goalCell);
     if (!path || path.length < 2) return;
-  
+
     // Move toward next cell center
     const nextCenter = toPixel(path[1]);
     const dx = nextCenter.x - this.pacman.x;
     const dy = nextCenter.y - this.pacman.y;
     const dist = Math.hypot(dx, dy);
-  
+
     if (dist < this.pacman.speed) {
       this.pacman.x = nextCenter.x;
       this.pacman.y = nextCenter.y;
@@ -90,7 +92,6 @@ export class PacmanAI {
       this.pacman.y += (dy / dist) * this.pacman.speed;
     }
   }
-  
 
   /**
    * Find the player nearest to PacMan (Manhattan distance)

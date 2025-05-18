@@ -40,7 +40,7 @@ socket.on("startGame", () => {
   initializeCanvases();
   drawBackground();
   animate();
-  console.log(frontEndPlayers)
+  console.log(frontEndPlayers);
 });
 
 // Store all remote players and Pac-Man
@@ -129,7 +129,6 @@ window.addEventListener("keydown", (e) => {
       break;
   }
 });
-
 
 let currentDirection: "up" | "down" | "left" | "right" | null = null;
 let sequenceNumber = 0;
@@ -242,19 +241,17 @@ socket.on("deleteCherryObject", (index: number) => {
   // Remove the speed object from the array
   cherryObjects.splice(index, 1);
 });
-      
 
-let selectedColor: string = 'aqua'; // Global Starting color
+let selectedColor: string = "aqua"; // Global Starting color
 
 function chooseColor(color: string) {
   selectedColor = color;
   console.log(`Selected color: ${color}`);
 
-
   // Update the color of the local player
   if (socket.id && frontEndPlayers[socket.id]) {
     frontEndPlayers[socket.id].color = selectedColor;
-    animate(); 
+    animate();
   }
 
   socket.emit("changeColor", selectedColor);
@@ -264,15 +261,15 @@ function chooseColor(color: string) {
 socket.on("changeTeamColor", (color: string) => {
   // apply to all remote players
   Object.values(frontEndPlayers).forEach((player) => {
-    player.color = color
-  })
-  const colorBox = document.getElementById("chosenColor")
+    player.color = color;
+  });
+  const colorBox = document.getElementById("chosenColor");
   if (colorBox) {
     colorBox.style.backgroundColor = color;
   }
 
-  animate()
-})
+  animate();
+});
 function setupColorButtons() {
   const buttons = document.querySelectorAll<HTMLButtonElement>(".color-button");
   buttons.forEach((button) => {
