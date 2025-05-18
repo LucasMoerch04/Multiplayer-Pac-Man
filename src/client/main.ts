@@ -244,9 +244,8 @@ socket.on("deleteCherryObject", (index: number) => {
   cherryObjects.splice(index, 1);
 });
       
-//const player = new SPlayer(70,70, "red"); // Create a new player instance with x, y and color
 
-let selectedColor: string = 'green'; // Global Starting color
+let selectedColor: string = 'aqua'; // Global Starting color
 
 function chooseColor(color: string) {
   selectedColor = color;

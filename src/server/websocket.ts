@@ -28,7 +28,7 @@ export function setupWebSocket(io: Server) {
     speed: PACMAN_SPEED,
   };
 
-  const players = backEndPlayers;
+  let selectedColor = "aqua";
 
   io.on("connection", (socket: Socket) => {
     const id = socket.id;
@@ -41,7 +41,7 @@ export function setupWebSocket(io: Server) {
     backEndPlayers[id] = {
       x: cornerX,
       y: cornerY,
-      color: "yellow",
+      color: selectedColor,
       speed: GHOST_SPEED,
       sequenceNumber: 0,
     };
@@ -172,6 +172,12 @@ export function setupWebSocket(io: Server) {
 
     // Handle color change
     socket.on("changeColor", (color: string) => {
+      selectedColor = color;
+      for (const playerID in backEndPlayers) {
+        if (playerID === id) {
+          backEndPlayers[playerID].color = selectedColor;
+        }
+      }
       io.emit("changeTeamColor", color)
     });
 
