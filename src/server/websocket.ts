@@ -1,4 +1,10 @@
 import { Server, Socket } from "socket.io";
+import {
+  GHOST_SPEED,
+  GHOST_SPEED_BOOST,
+  GHOST_SPEED_SLOW,
+  PACMAN_SPEED,
+} from "../shared/constants";
 
 /**
  * Sets up WebSocket event handling for the game.
@@ -24,10 +30,10 @@ export function setupWebSocket(io: Server) {
     x: 816,
     y: 816,
     color: "pacman",
-    speed: 6,
+    speed: PACMAN_SPEED,
   };
 
-  const players = backEndPlayers;
+  let selectedColor = "aqua";
 
   io.on("connection", (socket: Socket) => {
     const id = socket.id;
@@ -40,8 +46,8 @@ export function setupWebSocket(io: Server) {
     backEndPlayers[id] = {
       x: cornerX,
       y: cornerY,
-      color: "yellow",
-      speed: 5,
+      color: selectedColor,
+      speed: GHOST_SPEED,
       sequenceNumber: 0,
     };
     io.emit("updatePlayers", backEndPlayers);
@@ -51,6 +57,10 @@ export function setupWebSocket(io: Server) {
     socket.on("newUser", () => {
       countUsers++;
       io.emit("updateCounter", { countUsers });
+    });
+
+    socket.on("startGame", () => {
+      io.emit("startGame");
     });
 
     // Client-driven player movement
@@ -111,7 +121,7 @@ export function setupWebSocket(io: Server) {
           x: cornerX,
           y: cornerY,
           color: "yellow",
-          speed: 5,
+          speed: GHOST_SPEED,
           sequenceNumber: 0,
         };
         io.emit("updatePlayers", backEndPlayers);
@@ -125,14 +135,15 @@ export function setupWebSocket(io: Server) {
     // Speed boost relay
     socket.on("speedBoost", (flag: boolean, index: number) => {
       for (const playerID in backEndPlayers) {
-        backEndPlayers[playerID].speed = playerID === id ? 2 : 10;
+        backEndPlayers[playerID].speed =
+          playerID === id ? GHOST_SPEED : GHOST_SPEED_BOOST;
       }
       io.emit("updatePlayers", backEndPlayers);
 
       io.emit("deleteSpeedObject", index);
       setTimeout(() => {
         for (const playerID in backEndPlayers)
-          backEndPlayers[playerID].speed = 5;
+          backEndPlayers[playerID].speed = GHOST_SPEED;
         io.emit("updatePlayers", backEndPlayers);
       }, 10000);
     });
@@ -157,17 +168,23 @@ export function setupWebSocket(io: Server) {
           p.y = 710 + 32;
           break;
       }
-      p.speed = 2;
+      p.speed = GHOST_SPEED_SLOW;
       io.emit("updatePlayers", backEndPlayers);
       setTimeout(() => {
-        p.speed = 5;
+        p.speed = GHOST_SPEED;
         io.emit("updatePlayers", backEndPlayers);
       }, 10000);
     });
 
     // Handle color change
     socket.on("changeColor", (color: string) => {
-      io.emit("changeTeamColor", color)
+      selectedColor = color;
+      for (const playerID in backEndPlayers) {
+        if (playerID === id) {
+          backEndPlayers[playerID].color = selectedColor;
+        }
+      }
+      io.emit("changeTeamColor", color);
     });
 
     // Handle disconnect

@@ -4,10 +4,11 @@ import "./Collisionstext";
 import "./Powers";
 import "./Canvas";
 import "./style.css";
+import "./menu";
 
 import { SPlayer, Pacman } from "../shared/entities";
 import { boundaryArray } from "./CollisionBlocks";
-import { fgCtx, fgCanvas } from "./Canvas";
+import { fgCtx, fgCanvas, drawBackground } from "./Canvas";
 import {
   SpeedObjectCollision,
   speedObjects,
@@ -18,8 +19,10 @@ import {
 
 import { buildClientGrid } from "./grid";
 import { PacmanAI } from "./pacmanAI";
+import { PACMAN_SPEED } from "../shared/constants";
+import { initializeCanvases } from "./menu";
 
-export const socket = io("https://ghosts-revenge-eater-be-eaten.onrender.com/");
+export const socket = io();
 
 // On connect, announce and register
 socket.on("connect", () => {
@@ -30,7 +33,14 @@ socket.on("connect", () => {
 // Show connected count
 socket.on("updateCounter", (data) => {
   (document.getElementById("userCounter")! as HTMLElement).innerText =
-    `Users Connected: ${data.countUsers}`;
+    `Users: ${data.countUsers}`;
+});
+
+socket.on("startGame", () => {
+  initializeCanvases();
+  drawBackground();
+  animate();
+  console.log(frontEndPlayers);
 });
 
 // Store all remote players and Pac-Man
@@ -39,14 +49,14 @@ export const frontEndPacMan: Pacman[] = [];
 
 // Build collision grid & instantiate local Pac-Man + AI
 const walkableGrid = buildClientGrid();
-const localPac = new Pacman(816, 816, "pacman", 5);
+const localPac = new Pacman(816, 816, "pacman", PACMAN_SPEED);
 frontEndPacMan[0] = localPac;
 const pacmanAI = new PacmanAI(localPac, walkableGrid);
 
 // If server forces Pac-Man position, override AI
 socket.on("updatePacMan", (pos: { x: number; y: number }) => {
   if (!frontEndPacMan[0]) {
-    frontEndPacMan[0] = new Pacman(pos.x, pos.y, "pacman", 5);
+    frontEndPacMan[0] = new Pacman(pos.x, pos.y, "pacman", PACMAN_SPEED);
   } else {
     frontEndPacMan[0].x = pos.x;
     frontEndPacMan[0].y = pos.y;
@@ -119,7 +129,6 @@ window.addEventListener("keydown", (e) => {
       break;
   }
 });
-
 
 let currentDirection: "up" | "down" | "left" | "right" | null = null;
 let sequenceNumber = 0;
@@ -232,20 +241,17 @@ socket.on("deleteCherryObject", (index: number) => {
   // Remove the speed object from the array
   cherryObjects.splice(index, 1);
 });
-      
-//const player = new SPlayer(70,70, "red"); // Create a new player instance with x, y and color
 
-let selectedColor: string = 'green'; // Global Starting color
+let selectedColor: string = "aqua"; // Global Starting color
 
 function chooseColor(color: string) {
   selectedColor = color;
   console.log(`Selected color: ${color}`);
 
-
   // Update the color of the local player
   if (socket.id && frontEndPlayers[socket.id]) {
     frontEndPlayers[socket.id].color = selectedColor;
-    animate(); 
+    animate();
   }
 
   socket.emit("changeColor", selectedColor);
@@ -255,15 +261,15 @@ function chooseColor(color: string) {
 socket.on("changeTeamColor", (color: string) => {
   // apply to all remote players
   Object.values(frontEndPlayers).forEach((player) => {
-    player.color = color
-  })
-  const colorDisplay = document.getElementById("color");
-  if (colorDisplay) {
-    colorDisplay.textContent = `Current Color: ${color}`;
+    player.color = color;
+  });
+  const colorBox = document.getElementById("chosenColor");
+  if (colorBox) {
+    colorBox.style.backgroundColor = color;
   }
 
-  animate()
-})
+  animate();
+});
 function setupColorButtons() {
   const buttons = document.querySelectorAll<HTMLButtonElement>(".color-button");
   buttons.forEach((button) => {
@@ -276,5 +282,6 @@ function setupColorButtons() {
   });
 }
 
-window.addEventListener("DOMContentLoaded", setupColorButtons);
-
+window.addEventListener("DOMContentLoaded", () => {
+  setupColorButtons();
+});

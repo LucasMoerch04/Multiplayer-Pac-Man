@@ -12,7 +12,7 @@ const io = new Server(server, { pingInterval: 2000, pingTimeout: 5000 });
 console.log("Starting server..."); // Log here should only appear once
 
 // Serve static files from the docs directory
-app.use(express.static("docs"));
+app.use(express.static("dist"));
 
 // Set up game-specific WebSocket event handling
 setupWebSocket(io);
@@ -22,4 +22,3 @@ const PORT = 3000;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-

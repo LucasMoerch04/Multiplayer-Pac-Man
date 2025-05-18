@@ -4,9 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "build": "tsc && webpack --config src/server/webpack.config.ts",
+    "build": "tsc && webpack --config src/server/webpack.config.js",
     "dev": "concurrently \"npm run watch\" \"nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server/index.ts\"",
-    "watch": "webpack --watch --config src/server/webpack.config.ts",
+    "watch": "webpack --watch --config src/server/webpack.config.js",
     "start": "node dist/server/index.js",
     "docker:dev": "docker-compose -f docker-compose.yml up --build",
     "docker:down": "docker-compose down",

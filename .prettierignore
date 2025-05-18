@@ -1,7 +1,5 @@
 # Ignore artifacts:
 build
 coverage
-public
-docs
 node_modules
 dist

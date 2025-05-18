@@ -9,10 +9,8 @@ services:
       - "3000:3000"
     volumes:
       - .:/app:delegated
-      - node_modules:/app/node_modules
-      - public_data:/app/public
+      - public_data:/app/dist
     command: npm run dev
 
 volumes:
-  node_modules:
   public_data:
