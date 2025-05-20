@@ -208,8 +208,24 @@ setInterval(() => {
   }
 }, 1000 / 60);
 
+function drawVisionBlur(ctx: CanvasRenderingContext2D, player: SPlayer, radius: number) {
+  ctx.save();
+  const grad = ctx.createRadialGradient(
+    player.x + player.width / 2, player.y + player.height / 2, radius * 0.8,
+    player.x + player.width / 2, player.y + player.height / 2, radius
+  );
+  grad.addColorStop(0, 'rgba(0,0,0,0)');
+  grad.addColorStop(1, 'rgba(0,0,0,1)');
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  ctx.restore();
+}
+
 export function animate() {
   fgCtx.clearRect(0, 0, fgCanvas.width, fgCanvas.height);
+  if (!socket.id) return;
+  const player = frontEndPlayers[socket.id];
 
   // Draw Pac-Man
   const pacman = frontEndPacMan[0];
@@ -226,6 +242,10 @@ export function animate() {
   // Draw power-ups
   speedObjects.forEach((o) => o.draw());
   cherryObjects.forEach((o) => o.draw());
+
+  if (player){
+    drawVisionBlur(fgCtx, player, 300);  
+  } 
 }
 
 socket.on("deleteSpeedObject", (index: number) => {

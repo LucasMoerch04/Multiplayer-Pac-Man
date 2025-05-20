@@ -136,7 +136,7 @@ export function setupWebSocket(io: Server) {
     socket.on("speedBoost", (flag: boolean, index: number) => {
       for (const playerID in backEndPlayers) {
         backEndPlayers[playerID].speed =
-          playerID === id ? GHOST_SPEED : GHOST_SPEED_BOOST;
+          playerID === id ? GHOST_SPEED_SLOW : GHOST_SPEED_BOOST;
       }
       io.emit("updatePlayers", backEndPlayers);
 
