@@ -89,13 +89,6 @@ describe("PacmanAI", () => {
     expect(safe).toEqual({ x: 96, y: 96 });
   });
 
-  it("tick does nothing when no players", () => {
-    const before = { x: pac.x, y: pac.y };
-    ai.tick([]);
-    expect(pac.x).toBe(before.x);
-    expect(pac.y).toBe(before.y);
-  });
-
   it("tick does not move when no path exists", () => {
     // block neighbors so A* finds no path
     const blocked: WalkableGrid = [

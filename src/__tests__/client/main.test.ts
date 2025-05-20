@@ -77,6 +77,8 @@ describe("main.ts socket handlers & animate()", () => {
         <h1 id="userCounter">Users Connected: 0</h1>
         <canvas id="gameState" width="10" height="10"></canvas>
         <canvas id="gameCanvas" width="10" height="10"></canvas>
+        <button id="startButton"></button>
+
       `;
   });
 
