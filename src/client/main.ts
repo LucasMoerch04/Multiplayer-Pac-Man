@@ -40,7 +40,6 @@ socket.on("startGame", () => {
   initializeCanvases();
   drawBackground();
   animate();
-  console.log(frontEndPlayers);
 });
 
 // Store all remote players and Pac-Man
@@ -208,14 +207,22 @@ setInterval(() => {
   }
 }, 1000 / 60);
 
-function drawVisionBlur(ctx: CanvasRenderingContext2D, player: SPlayer, radius: number) {
+function drawVisionBlur(
+  ctx: CanvasRenderingContext2D,
+  player: SPlayer,
+  radius: number,
+) {
   ctx.save();
   const grad = ctx.createRadialGradient(
-    player.x + player.width / 2, player.y + player.height / 2, radius * 0.8,
-    player.x + player.width / 2, player.y + player.height / 2, radius
+    player.x + player.width / 2,
+    player.y + player.height / 2,
+    radius * 0.8,
+    player.x + player.width / 2,
+    player.y + player.height / 2,
+    radius,
   );
-  grad.addColorStop(0, 'rgba(0,0,0,0)');
-  grad.addColorStop(1, 'rgba(0,0,0,1)');
+  grad.addColorStop(0, "rgba(0,0,0,0)");
+  grad.addColorStop(1, "rgba(0,0,0,1)");
   ctx.globalAlpha = 1;
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -243,21 +250,17 @@ export function animate() {
   speedObjects.forEach((o) => o.draw());
   cherryObjects.forEach((o) => o.draw());
 
-  if (player){
-    drawVisionBlur(fgCtx, player, 300);  
-  } 
+  if (player) {
+    drawVisionBlur(fgCtx, player, 300);
+  }
 }
 
 socket.on("deleteSpeedObject", (index: number) => {
-  console.log("Received deleteSpeedObject event with index:", index);
-
   // Remove the speed object from the array
   speedObjects.splice(index, 1);
 });
 
 socket.on("deleteCherryObject", (index: number) => {
-  console.log("Received deleteCherryObject event with index:", index);
-
   // Remove the speed object from the array
   cherryObjects.splice(index, 1);
 });
@@ -266,7 +269,6 @@ let selectedColor: string = "aqua"; // Global Starting color
 
 function chooseColor(color: string) {
   selectedColor = color;
-  console.log(`Selected color: ${color}`);
 
   // Update the color of the local player
   if (socket.id && frontEndPlayers[socket.id]) {

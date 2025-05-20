@@ -95,7 +95,6 @@ export function teleportObjectCollision(player: {
 }): number {
   for (let i = 0; i < teleportObjects.length; i++) {
     if (teleportObjects[i].checkPlayerCollision(player)) {
-      console.log(`Colliding with teleport object at index ${i}:`, i);
       return i;
     }
   }
