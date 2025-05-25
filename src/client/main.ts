@@ -91,6 +91,7 @@ socket.on(
       if (!(id in backendPlayers)) delete frontEndPlayers[id];
     }
   },
+ 
 );
 
 // Main AI loop: step AI, emit its move, redraw
@@ -243,9 +244,19 @@ export function animate() {
   speedObjects.forEach((o) => o.draw());
   cherryObjects.forEach((o) => o.draw());
 
-  if (player){
-    drawVisionBlur(fgCtx, player, 300);  
-  } 
+  if (player) {
+    drawVisionBlur(fgCtx, player, 300);
+
+    // Calculate offsets to center Pac-Man
+    const offsetX = window.innerWidth / 2 - player.x - player.width / 2;
+    const offsetY = window.innerHeight / 2 - player.y - player.height / 2;
+
+    const gsCanvas = document.getElementById("gameState") as HTMLCanvasElement;
+    const bgCanvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
+
+    if (gsCanvas) gsCanvas.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+    if (bgCanvas) bgCanvas.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+  }
 }
 
 socket.on("deleteSpeedObject", (index: number) => {
