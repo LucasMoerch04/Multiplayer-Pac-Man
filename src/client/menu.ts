@@ -1,11 +1,9 @@
-import { bgCanvas, drawBackground, fgCanvas } from "./Canvas";
-import { animate, socket } from "./main";
+import { bgCanvas, fgCanvas } from "./Canvas";
+import { socket } from "./main";
 
 const startButton = document.getElementById("startButton") as HTMLButtonElement;
-console.log("Start button:", startButton);
 startButton.addEventListener("click", () => {
   socket.emit("startGame");
-  console.log("Start button clicked");
 });
 
 // Set up the canvases

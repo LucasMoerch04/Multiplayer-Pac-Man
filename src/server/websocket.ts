@@ -26,7 +26,7 @@ export function setupWebSocket(io: Server) {
   > = {};
 
   // Single Pac-Man instance
-  let pacMan: { x: number; y: number; color: string; speed: number } = {
+  const pacMan: { x: number; y: number; color: string; speed: number } = {
     x: 816,
     y: 816,
     color: "pacman",

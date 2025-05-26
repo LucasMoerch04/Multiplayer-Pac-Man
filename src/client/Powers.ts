@@ -109,7 +109,6 @@ export function cherryObjectCollision(pacman: {
 }): number {
   for (let i = 0; i < cherryObjects.length; i++) {
     if (cherryObjects[i].checkPlayerCollision(pacman)) {
-      console.log(`Colliding with cherry object at index ${i}:`, i);
       return i;
     }
   }

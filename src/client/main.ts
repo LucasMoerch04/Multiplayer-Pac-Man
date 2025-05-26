@@ -90,7 +90,6 @@ socket.on(
       if (!(id in backendPlayers)) delete frontEndPlayers[id];
     }
   },
- 
 );
 
 // Main AI loop: step AI, emit its move, redraw
@@ -261,8 +260,10 @@ export function animate() {
     const gsCanvas = document.getElementById("gameState") as HTMLCanvasElement;
     const bgCanvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 
-    if (gsCanvas) gsCanvas.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-    if (bgCanvas) bgCanvas.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+    if (gsCanvas)
+      gsCanvas.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+    if (bgCanvas)
+      bgCanvas.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
   }
 }
 
