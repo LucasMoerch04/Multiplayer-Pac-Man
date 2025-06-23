@@ -180,10 +180,7 @@ setInterval(() => {
 
     //Returns the index of the Teleporter Object the player is colliding with
     const collidingTeleportObjectIndex = teleportObjectCollision(player);
-    if (
-      collidingTeleportObjectIndex !== null &&
-      collidingTeleportObjectIndex >= 0
-    ) {
+    if (collidingTeleportObjectIndex !== null && collidingTeleportObjectIndex >= 0) {
       socket.emit("Teleport", collidingTeleportObjectIndex);
     }
 
@@ -191,7 +188,7 @@ setInterval(() => {
     const collidingCherryObjectIndex = cherryObjectCollision(
       frontEndPacMan[0]!,
     );
-    if (collidingCherryObjectIndex !== -1) {
+    if (collidingCherryObjectIndex !== null && collidingCherryObjectIndex >= 0) {
       socket.emit("CherryCollision", collidingCherryObjectIndex);
       pacmanAI.setHuntMode();
 
