@@ -175,7 +175,7 @@ setInterval(() => {
     //This is constantly checking if a player has collided with a object and if so it returns the index of the object
     const collidingSpeedObjectIndex = SpeedObjectCollision(player);
     if (collidingSpeedObjectIndex !== null && collidingSpeedObjectIndex >= 0) {
-      socket.emit("speedBoost", true, collidingSpeedObjectIndex);
+      socket.emit("speedBoost", collidingSpeedObjectIndex);
     }
 
     //Returns the index of the Teleporter Object the player is colliding with
@@ -185,9 +185,7 @@ setInterval(() => {
     }
 
     // This checks if pacman is colliding with a cherry object and sets into hunt mode for 10 seconds
-    const collidingCherryObjectIndex = cherryObjectCollision(
-      frontEndPacMan[0]!,
-    );
+    const collidingCherryObjectIndex = cherryObjectCollision(frontEndPacMan[0]);
     if (collidingCherryObjectIndex !== null && collidingCherryObjectIndex >= 0) {
       socket.emit("CherryCollision", collidingCherryObjectIndex);
       pacmanAI.setHuntMode();
