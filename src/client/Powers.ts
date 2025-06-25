@@ -59,7 +59,7 @@ export const teleportObjects: PowerObject[] = [
 const firstBlock = 32;
 const lastBlock = 32 * 50;
 export const cherryObjects: PowerObject[] = [
-  new PowerObject(fwrstBlock, firstBlock, PowerType.CHERRY, cherryImage),
+  new PowerObject(firstBlock, firstBlock, PowerType.CHERRY, cherryImage),
   new PowerObject(lastBlock, firstBlock, PowerType.CHERRY, cherryImage),
   new PowerObject(firstBlock, lastBlock, PowerType.CHERRY, cherryImage),
   new PowerObject(lastBlock, lastBlock, PowerType.CHERRY, cherryImage),
