@@ -133,14 +133,22 @@ export function setupWebSocket(io: Server) {
     });
 
     // Speed boost relay
-    socket.on("speedBoost", (flag: boolean, index: number) => {
+    socket.on("speedBoost", (index: number) => {
       for (const playerID in backEndPlayers) {
-        backEndPlayers[playerID].speed =
-          playerID === id ? GHOST_SPEED_SLOW : GHOST_SPEED_BOOST;
+      let player = backEndPlayers[playerID];
+       // if the player triggered the event. slow him down
+      if (playerID === id) {
+        player.speed = GHOST_SPEED_SLOW;
+      } else {
+        //else speed everyone else up
+        player.speed = GHOST_SPEED_BOOST;
+        }
       }
+      //update every player
       io.emit("updatePlayers", backEndPlayers);
-
+      //emit event 
       io.emit("deleteSpeedObject", index);
+      //after 10 second return the players speed to normal
       setTimeout(() => {
         for (const playerID in backEndPlayers)
           backEndPlayers[playerID].speed = GHOST_SPEED;
@@ -155,21 +163,26 @@ export function setupWebSocket(io: Server) {
     // Teleport relay
     socket.on("Teleport", (index: number) => {
       const p = backEndPlayers[id];
+      //errorhandeling
       if (!p) return;
       switch (index) {
+        //Top left
         case 0:
         case 1:
           p.x = 928 - 32;
           p.y = 1350 + 32;
           break;
+        //Bottom right elevator
         case 2:
         case 3:
           p.x = 290 - 32;
           p.y = 710 + 32;
           break;
       }
+      //Give slowness to the player triggering the event
       p.speed = GHOST_SPEED_SLOW;
       io.emit("updatePlayers", backEndPlayers);
+      //After 10 seconds change the players speed back to normal
       setTimeout(() => {
         p.speed = GHOST_SPEED;
         io.emit("updatePlayers", backEndPlayers);
