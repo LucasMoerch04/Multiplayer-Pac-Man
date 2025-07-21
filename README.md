@@ -3,78 +3,28 @@
 _Project for P2 by SW2_
 
 ---
+![Ghost eaten by AI PacMan](https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExZmkwNGhnMXNyejdxeWFuZW9vdm8xcXJkN2lzbXFwYWNsYmNsMWFuZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/4cH0RhoPrqleoO9NwD/giphy.gif)
 
-### Tips for Development
+![Team color switch](https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExYW10YmI4NHRjdmw3bjhhMDhxMDk0aWw4Z2U5YTZtZHBycG9vMzB0aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/GZJPG2Ep0bpFuUjXkG/giphy.gif)
 
-- **Separation of Concerns:**  
-  Keep client-side code (input, rendering, immediate feedback) separate from server-side code (authoritative game state, collision validation, synchronization).
+## 🕹️ Game Mechanics
 
-- **Modular Code Structure:**  
-  Create reusable functions for collision detection, movement, and event handling. This improves maintainability and testability.
+- **Real-time Multiplayer:**  
+  Uses WebSocket to let users play together in real time.
 
-- **Consistent Data Structures:**  
-  Use the same data formats (e.g., for positions and dimensions) on both the client and server to simplify state synchronization.
+- **Pacman AI:**  
+  Pacman switches between *Hunt Mode* and *Switch Mode* based on player actions.
 
-- **Testing:**  
-  Write unit tests for critical functions (collision, movement, power-up logic) to catch bugs early.
+- **Cherry Power-Up:**  
+  Picking up a cherry puts Pacman in *Hunt Mode* for 10 seconds, aggressively chasing players.
 
-- **Documentation:**  
-  Document your functions and code modules to ensure clarity, especially for team members who are new to programming.
+- **Speed Mechanics:**  
+  - Pacman moves at **2x the speed** of ghosts.
+  - Ghost players must **collaborate** strategically to catch Pacman.
 
-- **Pair-programming:**
-  Sit down together when writing code. Let one person be the primary writer. This can both be done physically and online. It helps to talk about the task at hand solve it together. This also ensures that we all collaborate to the project and understand it's functionality.
+- **Power-Ups:**  
+  - **Elevators/Teleporters** allow instant movement across the map.
+  - **Redbulls** slow down the player who picks it up but **boost their team’s speed** for 10 seconds.
 
-- **Communication:**  
-  Schedule regular meetings to discuss design decisions and implementation challenges. This helps ensure everyone is on the same page.
-
-## Git Guidelines
-
-### Branching Guidelines
-
-- **Main Branch (`main`):**  
-  This is the stable, production-ready branch.
-
-- **Development Branch (`develop`):**  
-  This branch holds the latest tested code. All features are merged into `develop` via pull requests.
-
-- **Feature Branches (`feature/*`):**  
-  Each new feature or bug fix is developed on its own branch, branched off from `develop`.  
-  **Example:** `feature/player-movement`
-
-- **Pull Requests:**  
-  Once a feature is complete, push the feature branch and create a pull request to merge into `develop`.  
-  **Note:** Each pull request requires at least 1 approval before merging.
-
-### Common Git Commands
-
-- **To get the latest changes:**
-  ```
-  git checkout develop
-  git pull origin develop
-  ```
-- **Create a New Feature Branch:**
-  ```bash
-  git checkout -b feature/your-feature-name
-  ```
-
-## Linting and formatting
-
-- **Linting commands**
-  ```bash
-  npm run lint
-  ```
-  ```bash
-  npm run lint:fix
-  ```
-- **Formatting commands**
-  ```bash
-  npm run format
-  ```
-
-### Running the project with Docker
-
-```bash
-npm run docker:dev
-```
-
-Other commands can be found in the `package.json`.
+- **Team Color Switcher:**  
+  Dynamic **UI color change** based on team, affecting the entire team's interface.
